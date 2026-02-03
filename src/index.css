@@ -1,0 +1,133 @@
+:root {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell,
+    Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light;
+  color: #111;
+  background: #fff;
+
+  --borde: 2px solid rgba(0, 0, 0, 0.25);
+  --borde-suave: 1px solid rgba(0, 0, 0, 0.15);
+  --radio: 10px;
+  --separacion: 12px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.layout {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: var(--separacion);
+  padding: var(--separacion);
+}
+
+/* Bloques del boceto */
+.cabecera {
+  border: var(--borde);
+  border-radius: var(--radio);
+  padding: var(--separacion);
+}
+
+.menu {
+  border: var(--borde);
+  border-radius: var(--radio);
+  padding: 10px 12px;
+}
+
+.contenidoPrincipal {
+  border: var(--borde);
+  border-radius: var(--radio);
+  padding: var(--separacion);
+  min-height: 60vh;
+}
+
+.pie {
+  border: var(--borde);
+  border-radius: var(--radio);
+  padding: 10px 12px;
+  opacity: 0.85;
+}
+
+.cabeceraFila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--separacion);
+}
+
+.boton {
+  border: var(--borde-suave);
+  border-radius: 999px;
+  padding: 8px 12px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.boton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  border: var(--borde-suave);
+  border-radius: 8px;
+}
+
+/* Layout principal (Listado + Detalle) */
+.panelCompra {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--separacion);
+}
+
+@media (max-width: 900px) {
+  .panelCompra {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel {
+  border: var(--borde-suave);
+  border-radius: var(--radio);
+  padding: var(--separacion);
+  min-height: 360px;
+}
+
+.panelTitulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.lista {
+  display: grid;
+  gap: 10px;
+}
+
+.item {
+  border: var(--borde-suave);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}

@@ -1,0 +1,28 @@
+.menuFila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.menuTitulo {
+  font-weight: 700;
+}
+
+.menuLinks {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.navlink {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.navlink.active {
+  border-color: rgba(0, 0, 0, 0.35);
+  font-weight: 600;
+}
