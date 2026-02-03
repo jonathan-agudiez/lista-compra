@@ -1,4 +1,6 @@
 import useCompra from "../../hooks/useCompra.js";
+import "./Listado.css";
+import { convertirEuros, convertirPeso } from "../functions/functions.js";
 
 /**
  * Listado de productos que pertenecen a la lista seleccionada.
@@ -10,44 +12,37 @@ const Listado = () => {
 
   return (
     <div className="lista">
-      <div style={{ fontSize: 12, opacity: 0.7 }}>Total: {total}</div>
+      <div className="listaMeta">
+        <span>Total: {total}</span>
+        {listaActiva?.name ? <span className="textSmall">Lista: {listaActiva.name}</span> : null}
+      </div>
 
       {!listaActiva ? (
-        <div style={{ opacity: 0.75 }}>
+        <div className="itemEmpty">
           No hay lista seleccionada. Crea una desde el panel de la derecha.
         </div>
       ) : total === 0 ? (
-        <div style={{ opacity: 0.75 }}>
+        <div className="itemEmpty">
           Todavía no hay productos en esta lista.
         </div>
       ) : (
         items.map((row) => (
           <article key={row.product_id} className="item">
-            <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            <div className="itemLeft">
               {row.product?.image_url ? (
                 <img
                   src={row.product.image_url}
                   alt={row.product?.name ?? "producto"}
-                  style={{ width: 150, height: 150, objectFit: "cover", borderRadius: 8 }}
+                  className="itemImg"
                 />
               ) : null}
 
               <div>
-                <div style={{ fontWeight: 600 }}>
-                  {row.product?.name ?? "(sin nombre)"}
-                </div>
+                <div className="itemTitulo">{row.product?.name ?? "(sin nombre)"}</div>
 
-                <div
-                  style={{
-                    fontSize: 12,
-                    opacity: 0.7,
-                    display: "flex",
-                    gap: 10,
-                    flexWrap: "wrap",
-                  }}
-                >
-                  {row.product?.weight != null && <span>Peso: {row.product.weight}</span>}
-                  {row.product?.price != null && <span>Precio: {row.product.price} €</span>}
+                <div className="itemDetalles">
+                  {row.product?.weight != null && <span>Peso: {convertirPeso(row.product.weight)} g</span>}
+                  {row.product?.price != null && <span>Precio: {convertirEuros(row.product.price)}</span>}
                 </div>
               </div>
             </div>

@@ -1,4 +1,5 @@
 import useCompra from "../../hooks/useCompra.js";
+import "./AccionesListado.css";
 
 /**
  * Acciones sobre el listado.
@@ -13,7 +14,7 @@ const AccionesListado = () => {
   };
 
   return (
-    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+    <div className="accionesListado">
       <button className="boton" type="button" onClick={recargar} disabled={cargando}>
         Recargar
       </button>

@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
+import "./Error.css";
 
 const Error = () => {
   return (
-    <section>
+    <section className="errorPage">
       <h2>Error</h2>
       <p>Ruta no encontrada.</p>
       <Link className="navlink" to="/">

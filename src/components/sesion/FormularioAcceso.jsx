@@ -1,5 +1,6 @@
 import { useState } from "react";
 import useSesion from "../../hooks/useSesion.js";
+import "./formularioAcceso.css";
 
 /**
  * Formulario base (controlado) para registro / login.
@@ -25,76 +26,78 @@ const FormularioAcceso = () => {
   };
 
   return (
-    <form onSubmit={enviar} style={{ display: "grid", gap: 12, maxWidth: 460 }}>
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-        <button
-          type="button"
-          className="boton"
-          onClick={() => setModo("login")}
-          disabled={cargando}
-        >
-          Login
-        </button>
+    <div className="formAccesoCard">
+      <form onSubmit={enviar} className="formAcceso">
+        <div className="formAccesoHeader">
+          <h3 className="formAccesoTitle">Acceso</h3>
 
-        <button
-          type="button"
-          className="boton"
-          onClick={() => setModo("registro")}
-          disabled={cargando}
-        >
-          Registro
-        </button>
-      </div>
+          <div className="formAccesoTabs">
+            <button
+              type="button"
+              className="boton"
+              onClick={() => setModo("login")}
+              disabled={cargando}
+              aria-pressed={modo === "login"}
+            >
+              Login
+            </button>
 
-      {modo === "registro" && (
-        <label>
-          Nombre completo
+            <button
+              type="button"
+              className="boton"
+              onClick={() => setModo("registro")}
+              disabled={cargando}
+              aria-pressed={modo === "registro"}
+            >
+              Registro
+            </button>
+          </div>
+        </div>
+
+        {modo === "registro" && (
+          <div className="formAccesoField">
+            <label>Nombre completo</label>
+            <input
+              className="input"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              placeholder="Tu nombre (display name)"
+              autoComplete="name"
+            />
+          </div>
+        )}
+
+        <div className="formAccesoField">
+          <label>Email</label>
           <input
             className="input"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            placeholder="Tu nombre (display name)"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="correo@ejemplo.com"
+            autoComplete="email"
           />
-        </label>
-      )}
-
-      <label>
-        Email
-        <input
-          className="input"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="correo@ejemplo.com"
-          autoComplete="email"
-        />
-      </label>
-
-      <label>
-        Contraseña
-        <input
-          className="input"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="••••••••"
-          type="password"
-          autoComplete={modo === "registro" ? "new-password" : "current-password"}
-        />
-      </label>
-
-      <button className="boton" type="submit" disabled={cargando}>
-        {modo === "registro" ? "Crear cuenta" : "Entrar"}
-      </button>
-
-      {error && (
-        <div style={{ border: "1px solid rgba(200,0,0,.35)", padding: 10, borderRadius: 10 }}>
-          {error}
         </div>
-      )}
 
-      <div style={{ fontSize: 12, opacity: 0.75 }}>
-        Nota: este formulario es intencionalmente simple para que lo adaptes al enunciado.
-      </div>
-    </form>
+        <div className="formAccesoField">
+          <label>Contraseña</label>
+          <input
+            className="input"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+            type="password"
+            autoComplete={modo === "registro" ? "new-password" : "current-password"}
+          />
+        </div>
+
+        <button className="boton" type="submit" disabled={cargando}>
+          {modo === "registro" ? "Crear cuenta" : "Entrar"}
+        </button>
+
+        {error && <div className="formAccesoError">{error}</div>}
+
+      </form>
+    </div>
   );
 };
 

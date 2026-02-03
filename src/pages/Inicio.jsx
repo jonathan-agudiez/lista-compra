@@ -1,34 +1,35 @@
 import { Link } from "react-router-dom";
 import useSesion from "../hooks/useSesion.js";
+import "./Inicio.css";
 
 const Inicio = () => {
   const { user } = useSesion();
 
   return (
-    <section>
-      <h2>Inicio</h2>
-      <p>
-        Proyecto base: <strong>Lista de la compra</strong> con React + Supabase.
-      </p>
+    <section className="inicio">
+      <div className="inicioHero">
+        <h2>Lista de la compra</h2>
+        <p>Proyecto base con React + Supabase, interfaz moderna y responsive.</p>
 
-      <p>
-        {user ? (
-          <Link className="navlink" to="/compra">
-            Ir a la app
-          </Link>
-        ) : (
-          <Link className="navlink" to="/acceso">
-            Acceder / Registrarse
-          </Link>
-        )}
-      </p>
+        <div className="inicioCtas">
+          {user ? (
+            <Link className="navlink" to="/compra">
+              Ir a la app
+            </Link>
+          ) : (
+            <Link className="navlink" to="/acceso">
+              Acceder / Registrarse
+            </Link>
+          )}
+        </div>
 
-      <hr />
+        <hr className="hrSuave" />
 
-      <p>
-        Aquí puedes colocar la parte pública de la aplicación (landing, explicación,
-        etc.).
-      </p>
+        <p>
+          Aquí puedes colocar la parte pública de la aplicación (landing, explicación,
+          etc.).
+        </p>
+      </div>
     </section>
   );
 };

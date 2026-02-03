@@ -1,6 +1,8 @@
 import AccionesListado from "./AccionesListado.jsx";
 import Listado from "./Listado.jsx";
 import useCompra from "../../hooks/useCompra.js";
+import "./panel.css";
+import "./PanelListado.css";
 
 const PanelListado = () => {
   const { listas, listaActiva, setListaActiva, cargando } = useCompra();
@@ -8,13 +10,13 @@ const PanelListado = () => {
   return (
     <section className="panel">
       <div className="panelTitulo">
-        <h3 style={{ margin: 0 }}>Listado</h3>
+        <h3>Listado</h3>
         <AccionesListado />
       </div>
 
-      <div style={{ display: "grid", gap: 8, marginBottom: 12 }}>
-        <label style={{ display: "grid", gap: 6 }}>
-          Lista activa
+      <div className="panelListadoSelector">
+        <label>
+          <span>Lista activa</span>
           <select
             className="input"
             value={listaActiva?.id ?? ""}

@@ -1,10 +1,11 @@
 import FormularioAcceso from "../components/sesion/FormularioAcceso.jsx";
+import "./Acceso.css";
 
 const Acceso = () => {
   return (
-    <section>
+    <section className="acceso">
       <h2>Acceso</h2>
-      <p>
+      <p className="accesoIntro">
         Pantalla para <strong>registro</strong> e <strong>inicio de sesión</strong>.
       </p>
 

@@ -1,5 +1,7 @@
 import { useState } from "react";
 import useCompra from "../../hooks/useCompra.js";
+import "./panel.css";
+import "./PanelDetalle.css";
 
 /**
  * Panel de acciones/formularios.
@@ -56,12 +58,12 @@ const PanelDetalle = () => {
   return (
     <section className="panel">
       <div className="panelTitulo">
-        <h3 style={{ margin: 0 }}>Detalles y formularios</h3>
+        <h3>Detalles y formularios</h3>
       </div>
 
-      <div style={{ display: "grid", gap: 18 }}>
-        <form onSubmit={enviarCrearLista} style={{ display: "grid", gap: 8 }}>
-          <div style={{ fontWeight: 600 }}>Crear lista</div>
+      <div className="panelDetalle">
+        <form onSubmit={enviarCrearLista} className="bloqueForm">
+          <div className="bloqueTitle">Crear lista</div>
 
           <label>
             Nombre
@@ -79,10 +81,10 @@ const PanelDetalle = () => {
           </button>
         </form>
 
-        <hr style={{ border: 0, borderTop: "1px solid rgba(255,255,255,.08)" }} />
+        <hr className="hrSuave" />
 
-        <form onSubmit={enviarAnadir} style={{ display: "grid", gap: 8 }}>
-          <div style={{ fontWeight: 600 }}>Añadir producto a la lista</div>
+        <form onSubmit={enviarAnadir} className="bloqueForm">
+          <div className="bloqueTitle">Añadir producto a la lista</div>
 
           <label>
             Producto
@@ -101,7 +103,7 @@ const PanelDetalle = () => {
             </select>
           </label>
 
-          <div style={{ fontSize: 12, opacity: 0.75 }}>
+          <div className="panelDetalleNota">
             Lista activa: <strong>{listaActiva?.name ?? "(ninguna)"}</strong>
           </div>
 
@@ -109,27 +111,10 @@ const PanelDetalle = () => {
             Añadir
           </button>
 
-          <div style={{ fontSize: 12, opacity: 0.75 }}>
-            El catálogo viene de <code>products</code> en Supabase.
-          </div>
         </form>
 
-        {error && (
-          <div
-            style={{
-              border: "1px solid rgba(200,0,0,.35)",
-              padding: 10,
-              borderRadius: 10,
-            }}
-          >
-            {error}
-          </div>
-        )}
+        {error && <div className="errorBox">{error}</div>}
 
-        <div style={{ fontSize: 12, opacity: 0.75 }}>
-          Nota: si no te aparecen datos, revisa en Supabase las políticas (RLS) y
-          que las relaciones estén bien.
-        </div>
       </div>
     </section>
   );

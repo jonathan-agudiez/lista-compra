@@ -1,3 +1,5 @@
+import "./Cabecera.css";
+
 const Cabecera = ({ children }) => {
   return <header className="cabecera">{children}</header>;
 };

@@ -1,0 +1,28 @@
+.panelListadoSelector {
+  display: grid;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.panelListadoSelector label {
+  display: grid;
+  gap: var(--space-2);
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--muted);
+}
+
+select.input {
+  padding: 12px 100px 12px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(241, 30, 30, 0.06);
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 18px;
+  background-position: right 200px center;
+}
