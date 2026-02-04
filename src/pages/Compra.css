@@ -24,6 +24,10 @@
   gap: var(--space-4);
 }
 
+.productosSeccion {
+  margin-top: 18px;
+}
+
 @media (max-width: 980px) {
   .panelCompra {
     grid-template-columns: 1fr;
