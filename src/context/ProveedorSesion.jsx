@@ -8,7 +8,11 @@ const ProveedorSesion = ({ children }) => {
   const [session, setSession] = useState(null);
   const [error, setError] = useState("");
 
-  const user = session?.user ?? null;
+  // Usuario actual (si no hay sesión, es null)
+  let user = null;
+  if (session && session.user) {
+    user = session.user;
+  }
 
   useEffect(() => {
     let activo = true;
@@ -18,12 +22,24 @@ const ProveedorSesion = ({ children }) => {
         setCargando(true);
         setError("");
 
-        const { data, error } = await supabase.auth.getSession();
-        if (error) throw error;
+        const respuesta = await supabase.auth.getSession();
+        const data = respuesta.data;
+        const errorSupabase = respuesta.error;
 
-        if (activo) setSession(data.session ?? null);
+        if (errorSupabase) throw errorSupabase;
+
+        if (activo) {
+          if (data && data.session) {
+            setSession(data.session);
+          } else {
+            setSession(null);
+          }
+        }
       } catch (e) {
-        if (activo) setError(e?.message ?? "Error al cargar la sesión");
+        if (activo) {
+          const msg = e && e.message ? e.message : "Error al cargar la sesión";
+          setError(msg);
+        }
       } finally {
         if (activo) setCargando(false);
       }
@@ -31,15 +47,28 @@ const ProveedorSesion = ({ children }) => {
 
     cargarSesion();
 
-    const { data: suscripcion } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        if (activo) setSession(session ?? null);
+    const respuestaSub = supabase.auth.onAuthStateChange(function (_event, sesionNueva) {
+      if (activo) {
+        if (sesionNueva) {
+          setSession(sesionNueva);
+        } else {
+          setSession(null);
+        }
       }
-    );
+    });
 
     return () => {
       activo = false;
-      suscripcion?.subscription?.unsubscribe();
+
+      // Cancelar suscripción (según lo que devuelva Supabase)
+      if (
+        respuestaSub &&
+        respuestaSub.data &&
+        respuestaSub.data.subscription &&
+        respuestaSub.data.subscription.unsubscribe
+      ) {
+        respuestaSub.data.subscription.unsubscribe();
+      }
     };
   }, []);
 
@@ -48,9 +77,9 @@ const ProveedorSesion = ({ children }) => {
       setCargando(true);
       setError("");
 
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
+      const respuesta = await supabase.auth.signUp({
+        email: email,
+        password: password,
         options: {
           data: {
             full_name: fullName,
@@ -58,9 +87,11 @@ const ProveedorSesion = ({ children }) => {
         },
       });
 
-      if (error) throw error;
+      const errorSupabase = respuesta.error;
+      if (errorSupabase) throw errorSupabase;
     } catch (e) {
-      setError(e?.message ?? "Error en el registro");
+      const msg = e && e.message ? e.message : "Error en el registro";
+      setError(msg);
     } finally {
       setCargando(false);
     }
@@ -71,14 +102,16 @@ const ProveedorSesion = ({ children }) => {
       setCargando(true);
       setError("");
 
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const respuesta = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
       });
 
-      if (error) throw error;
+      const errorSupabase = respuesta.error;
+      if (errorSupabase) throw errorSupabase;
     } catch (e) {
-      setError(e?.message ?? "Error al iniciar sesión");
+      const msg = e && e.message ? e.message : "Error al iniciar sesión";
+      setError(msg);
     } finally {
       setCargando(false);
     }
@@ -89,23 +122,27 @@ const ProveedorSesion = ({ children }) => {
       setCargando(true);
       setError("");
 
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      const respuesta = await supabase.auth.signOut();
+      const errorSupabase = respuesta.error;
+
+      if (errorSupabase) throw errorSupabase;
     } catch (e) {
-      setError(e?.message ?? "Error al cerrar sesión");
+      const msg = e && e.message ? e.message : "Error al cerrar sesión";
+      setError(msg);
     } finally {
       setCargando(false);
     }
   };
+
   const value = {
-      cargando,
-      session,
-      user,
-      error,
-      signUp,
-      signIn,
-      signOut,
-      setError,
+    cargando,
+    session,
+    user,
+    error,
+    signUp,
+    signIn,
+    signOut,
+    setError,
   };
 
   return (

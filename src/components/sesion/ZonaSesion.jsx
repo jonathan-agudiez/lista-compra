@@ -5,7 +5,14 @@ import "./zonaSesion.css";
 const ZonaSesion = () => {
   const { user, cargando, signOut } = useSesion();
 
-  const nombre = user?.user_metadata?.full_name || user?.email || null;
+  // Se obtiene un nombre para mostrar en pantalla
+  let nombre = null;
+
+  if (user && user.user_metadata && user.user_metadata.full_name) {
+    nombre = user.user_metadata.full_name;
+  } else if (user && user.email) {
+    nombre = user.email;
+  }
 
   return (
     <div className="zonaSesion">
@@ -13,7 +20,8 @@ const ZonaSesion = () => {
         <>
           <div className="usuario">
             <div className="usuarioEtiqueta">Sesión:</div>
-            <div className="usuarioNombre" title={nombre ?? ""}>
+
+            <div className="usuarioNombre" title={nombre ? nombre : ""}>
               {nombre}
             </div>
           </div>

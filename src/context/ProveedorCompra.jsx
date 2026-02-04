@@ -4,10 +4,10 @@ import useSesion from "../hooks/useSesion.js";
 
 export const CompraContext = createContext(null);
 
-/**
- * Contexto de la parte "compra".
- * La idea es tener en un sitio: listas, catálogo de productos y los items.
- */
+/*
+  Contexto de la parte "compra".
+  Aquí se guardan las listas, el catálogo y los productos de la lista.
+*/
 const ProveedorCompra = ({ children }) => {
   const { user } = useSesion();
 
@@ -27,24 +27,46 @@ const ProveedorCompra = ({ children }) => {
       setCargando(true);
       setError("");
 
-      const { data, error } = await supabase
+      const respuesta = await supabase
         .from("shopping_lists")
         .select("id, name, owner_id, created_at")
         .eq("owner_id", user.id)
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      const data = respuesta.data;
+      const errorSupabase = respuesta.error;
 
-      setListas(data ?? []);
+      if (errorSupabase) throw errorSupabase;
 
-      // Si no hay lista activa (o ya no existe), selecciono la primera.
-      setListaActiva((prev) => {
-        const existe = (data ?? []).find((l) => l.id === prev?.id);
-        if (existe) return existe;
-        return (data ?? [])[0] ?? null;
-      });
+      // Si data viene vacío, se usa array vacío
+      const listasCargadas = data ? data : [];
+      setListas(listasCargadas);
+
+      // Si la lista activa no existe o es null, se pone la primera lista
+      let nuevaActiva = null;
+
+      if (listaActiva && listaActiva.id) {
+        // Buscar si sigue existiendo en la lista nueva (con for clásico)
+        for (let i = 0; i < listasCargadas.length; i++) {
+          if (listasCargadas[i].id === listaActiva.id) {
+            nuevaActiva = listasCargadas[i];
+          }
+        }
+      }
+
+      if (!nuevaActiva) {
+        if (listasCargadas.length > 0) {
+          nuevaActiva = listasCargadas[0];
+        } else {
+          nuevaActiva = null;
+        }
+      }
+
+      setListaActiva(nuevaActiva);
     } catch (e) {
-      setError(e?.message ?? "Error al cargar las listas");
+      // Mensaje sencillo sin optional chaining
+      const msg = e && e.message ? e.message : "Error al cargar las listas";
+      setError(msg);
     } finally {
       setCargando(false);
     }
@@ -55,16 +77,20 @@ const ProveedorCompra = ({ children }) => {
       setCargando(true);
       setError("");
 
-      const { data, error } = await supabase
+      const respuesta = await supabase
         .from("products")
         .select("id, name, weight, price, image_url, description")
         .order("name", { ascending: true });
 
-      if (error) throw error;
+      const data = respuesta.data;
+      const errorSupabase = respuesta.error;
 
-      setCatalogo(data ?? []);
+      if (errorSupabase) throw errorSupabase;
+
+      setCatalogo(data ? data : []);
     } catch (e) {
-      setError(e?.message ?? "Error al cargar el catálogo");
+      const msg = e && e.message ? e.message : "Error al cargar el catálogo";
+      setError(msg);
     } finally {
       setCargando(false);
     }
@@ -80,7 +106,7 @@ const ProveedorCompra = ({ children }) => {
       setCargando(true);
       setError("");
 
-      const { data, error } = await supabase
+      const respuesta = await supabase
         .from("shopping_list_items")
         .select(
           `
@@ -98,17 +124,29 @@ const ProveedorCompra = ({ children }) => {
         )
         .eq("list_id", listId);
 
-      if (error) throw error;
+      const data = respuesta.data;
+      const errorSupabase = respuesta.error;
 
-      const normalizados = (data ?? []).map((row) => ({
-        list_id: row.list_id,
-        product_id: row.product_id,
-        product: row.products ?? null,
-      }));
+      if (errorSupabase) throw errorSupabase;
+
+      const filas = data ? data : [];
+      const normalizados = [];
+
+      for (let i = 0; i < filas.length; i++) {
+        const row = filas[i];
+
+        normalizados.push({
+          list_id: row.list_id,
+          product_id: row.product_id,
+          product: row.products ? row.products : null,
+        });
+      }
 
       setItems(normalizados);
     } catch (e) {
-      setError(e?.message ?? "Error al cargar los productos de la lista");
+      const msg =
+        e && e.message ? e.message : "Error al cargar los productos de la lista";
+      setError(msg);
     } finally {
       setCargando(false);
     }
@@ -121,19 +159,23 @@ const ProveedorCompra = ({ children }) => {
       setCargando(true);
       setError("");
 
-      const { data, error } = await supabase
+      const respuesta = await supabase
         .from("shopping_lists")
-        .insert({ name, owner_id: user.id })
+        .insert({ name: name, owner_id: user.id })
         .select("id, name, owner_id, created_at")
         .single();
 
-      if (error) throw error;
+      const data = respuesta.data;
+      const errorSupabase = respuesta.error;
 
-      // Recargo para que quede todo ordenado y consistente.
+      if (errorSupabase) throw errorSupabase;
+
+      // Recargar listas y poner la nueva activa
       await cargarListas();
-      setListaActiva(data ?? null);
+      setListaActiva(data ? data : null);
     } catch (e) {
-      setError(e?.message ?? "Error al crear la lista");
+      const msg = e && e.message ? e.message : "Error al crear la lista";
+      setError(msg);
     } finally {
       setCargando(false);
     }
@@ -146,16 +188,18 @@ const ProveedorCompra = ({ children }) => {
       setCargando(true);
       setError("");
 
-      const { error } = await supabase
+      const respuesta = await supabase
         .from("shopping_list_items")
-        .insert({ list_id, product_id });
+        .insert({ list_id: list_id, product_id: product_id });
 
-      if (error) throw error;
+      const errorSupabase = respuesta.error;
+      if (errorSupabase) throw errorSupabase;
 
       await cargarItems(list_id);
     } catch (e) {
-      // Si está repetido suele dar error por clave duplicada.
-      setError(e?.message ?? "Error al añadir el producto a la lista");
+      const msg =
+        e && e.message ? e.message : "Error al añadir el producto a la lista";
+      setError(msg);
     } finally {
       setCargando(false);
     }
@@ -168,23 +212,25 @@ const ProveedorCompra = ({ children }) => {
       setCargando(true);
       setError("");
 
-      const { error } = await supabase
+      const respuesta = await supabase
         .from("shopping_list_items")
         .delete()
         .eq("list_id", list_id)
         .eq("product_id", product_id);
 
-      if (error) throw error;
+      const errorSupabase = respuesta.error;
+      if (errorSupabase) throw errorSupabase;
 
       await cargarItems(list_id);
     } catch (e) {
-      setError(e?.message ?? "Error al quitar el producto");
+      const msg = e && e.message ? e.message : "Error al quitar el producto";
+      setError(msg);
     } finally {
       setCargando(false);
     }
   };
 
-  // Cuando cambia el usuario, recargo listas y catálogo.
+  // Cuando cambia el usuario, se recargan listas y catálogo
   useEffect(() => {
     if (!user) {
       setListas([]);
@@ -196,31 +242,38 @@ const ProveedorCompra = ({ children }) => {
     cargarListas();
     cargarCatalogo();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id]);
+  }, [user]);
 
-  // Cuando cambia la lista activa, recargo items.
+  // Cuando cambia la lista activa, se recargan los items
   useEffect(() => {
-    cargarItems(listaActiva?.id ?? null);
+    if (listaActiva && listaActiva.id) {
+      cargarItems(listaActiva.id);
+    } else {
+      cargarItems(null);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [listaActiva?.id]);
+  }, [listaActiva]);
+
   const value = {
-      cargando,
-      error,
-      setError,
-      listas,
-      listaActiva,
-      setListaActiva,
-      catalogo,
-      items,
-      cargarListas,
-      cargarCatalogo,
-      cargarItems,
-      crearLista,
-      anadirProductoALista,
-      quitarProductoDeLista,
+    cargando,
+    error,
+    setError,
+    listas,
+    listaActiva,
+    setListaActiva,
+    catalogo,
+    items,
+    cargarListas,
+    cargarCatalogo,
+    cargarItems,
+    crearLista,
+    anadirProductoALista,
+    quitarProductoDeLista,
   };
 
-  return <CompraContext.Provider value={value}>{children}</CompraContext.Provider>;
+  return (
+    <CompraContext.Provider value={value}>{children}</CompraContext.Provider>
+  );
 };
 
 export default ProveedorCompra;

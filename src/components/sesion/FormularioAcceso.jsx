@@ -2,14 +2,14 @@ import { useState } from "react";
 import useSesion from "../../hooks/useSesion.js";
 import "./formularioAcceso.css";
 
-/**
- * Formulario base (controlado) para registro / login.
- * Está pensado para que lo modifiques a tu gusto: validaciones, mensajes, etc.
- */
+/*
+  Formulario para login y registro.
+  Se usa el mismo formulario y se cambia el modo con botones.
+*/
 const FormularioAcceso = () => {
   const { signIn, signUp, cargando, error } = useSesion();
 
-  const [modo, setModo] = useState("login"); // "login" | "registro"
+  const [modo, setModo] = useState("login"); // login o registro
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -18,12 +18,23 @@ const FormularioAcceso = () => {
     e.preventDefault();
 
     if (modo === "registro") {
-      await signUp({ email, password, fullName });
-      return;
+      await signUp({ email: email, password: password, fullName: fullName });
+    } else {
+      await signIn({ email: email, password: password });
     }
-
-    await signIn({ email, password });
   };
+
+  // Para no usar ternario en el atributo
+  let autocompletePassword = "current-password";
+  if (modo === "registro") {
+    autocompletePassword = "new-password";
+  }
+
+  // Textos del botón según el modo
+  let textoBoton = "Entrar";
+  if (modo === "registro") {
+    textoBoton = "Crear cuenta";
+  }
 
   return (
     <div className="formAccesoCard">
@@ -54,17 +65,21 @@ const FormularioAcceso = () => {
           </div>
         </div>
 
-        {modo === "registro" && (
+        {/* En registro se muestra un campo extra */}
+        {modo === "registro" ? (
           <div className="formAccesoField">
             <label>Nombre completo</label>
             <input
               className="input"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              placeholder="Tu nombre (display name)"
+              placeholder="Tu nombre"
               autoComplete="name"
+              disabled={cargando}
             />
           </div>
+        ) : (
+          ""
         )}
 
         <div className="formAccesoField">
@@ -75,6 +90,7 @@ const FormularioAcceso = () => {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="correo@ejemplo.com"
             autoComplete="email"
+            disabled={cargando}
           />
         </div>
 
@@ -86,16 +102,16 @@ const FormularioAcceso = () => {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
             type="password"
-            autoComplete={modo === "registro" ? "new-password" : "current-password"}
+            autoComplete={autocompletePassword}
+            disabled={cargando}
           />
         </div>
 
         <button className="boton" type="submit" disabled={cargando}>
-          {modo === "registro" ? "Crear cuenta" : "Entrar"}
+          {textoBoton}
         </button>
 
-        {error && <div className="formAccesoError">{error}</div>}
-
+        {error ? <div className="formAccesoError">{error}</div> : ""}
       </form>
     </div>
   );

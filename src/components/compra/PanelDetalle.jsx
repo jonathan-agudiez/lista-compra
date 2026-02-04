@@ -3,10 +3,11 @@ import useCompra from "../../hooks/useCompra.js";
 import "./panel.css";
 import "./PanelDetalle.css";
 
-/**
- * Panel de acciones/formularios.
- * (Lo dejo en un panel aparte para tener el código más ordenado.)
- */
+/*
+  Este panel tiene dos formularios:
+  1) Crear una lista
+  2) Añadir un producto del catálogo a la lista activa
+*/
 const PanelDetalle = () => {
   const {
     cargando,
@@ -23,7 +24,9 @@ const PanelDetalle = () => {
 
   const enviarCrearLista = async (e) => {
     e.preventDefault();
-    if (!nombreLista.trim()) return;
+
+    // Si está vacío, no se envía
+    if (nombreLista.trim() === "") return;
 
     await crearLista({ name: nombreLista.trim() });
     setNombreLista("");
@@ -35,12 +38,14 @@ const PanelDetalle = () => {
   const enviarAnadir = async (e) => {
     e.preventDefault();
 
-    if (!listaActiva?.id) {
+    // Si no hay lista seleccionada, se muestra un error
+    if (!listaActiva || !listaActiva.id) {
       setError("Primero crea o selecciona una lista");
       return;
     }
 
-    if (!productoSeleccionado) return;
+    // Si no se ha elegido producto, no se envía
+    if (productoSeleccionado === "") return;
 
     await anadirProductoALista({
       list_id: listaActiva.id,
@@ -50,10 +55,19 @@ const PanelDetalle = () => {
     setProductoSeleccionado("");
   };
 
-  const opcionesCatalogo = (catalogo ?? []).map((p) => ({
-    id: p.id,
-    label: p.name,
-  }));
+  // Si catalogo viene null/undefined, se usa un array vacío
+  const catalogoSeguro = catalogo ? catalogo : [];
+
+  const opcionesCatalogo = catalogoSeguro.map((p) => {
+    return {
+      id: p.id,
+      label: p.name,
+    };
+  });
+
+  // Texto para mostrar la lista activa sin usar ?? ni optional chaining
+  const nombreListaActiva =
+    listaActiva && listaActiva.name ? listaActiva.name : "(ninguna)";
 
   return (
     <section className="panel">
@@ -104,17 +118,15 @@ const PanelDetalle = () => {
           </label>
 
           <div className="panelDetalleNota">
-            Lista activa: <strong>{listaActiva?.name ?? "(ninguna)"}</strong>
+            Lista activa: <strong>{nombreListaActiva}</strong>
           </div>
 
           <button className="boton" type="submit" disabled={cargando}>
             Añadir
           </button>
-
         </form>
 
-        {error && <div className="errorBox">{error}</div>}
-
+        {error ? <div className="errorBox">{error}</div> : ""}
       </div>
     </section>
   );

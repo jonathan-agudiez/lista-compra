@@ -7,6 +7,8 @@ import "./PanelListado.css";
 const PanelListado = () => {
   const { listas, listaActiva, setListaActiva, cargando } = useCompra();
 
+  const idListaActiva = listaActiva ? listaActiva.id : "";
+
   return (
     <section className="panel">
       <div className="panelTitulo">
@@ -17,12 +19,22 @@ const PanelListado = () => {
       <div className="panelListadoSelector">
         <label>
           <span>Lista activa</span>
+
           <select
             className="input"
-            value={listaActiva?.id ?? ""}
+            value={idListaActiva}
             onChange={(e) => {
               const id = e.target.value;
-              const encontrada = listas.find((l) => l.id === id) ?? null;
+
+              // Se busca la lista seleccionada con un bucle normal
+              let encontrada = null;
+
+              for (let i = 0; i < listas.length; i++) {
+                if (listas[i].id === id) {
+                  encontrada = listas[i];
+                }
+              }
+
               setListaActiva(encontrada);
             }}
             disabled={cargando || listas.length === 0}
