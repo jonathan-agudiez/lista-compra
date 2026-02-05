@@ -25,6 +25,15 @@ const Menu = () => {
           >
             App
           </Link>
+
+          <Link
+            to="/productos"
+            className={
+              location.pathname.startsWith("/productos") ? "navlink active" : "navlink"
+            }
+          >
+            Productos
+          </Link>
         </div>
       </div>
     </nav>

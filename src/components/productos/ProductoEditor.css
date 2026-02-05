@@ -1,0 +1,39 @@
+.productoEditor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.productoEditorEmpty {
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(11, 18, 32, 0.12);
+}
+
+.productoEditorInfo {
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.productoEditorFila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+@media (max-width: 820px) {
+  .productoEditorFila {
+    grid-template-columns: 1fr;
+  }
+}
+
+.productoEditorAcciones {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.botonSec {
+  background: rgba(255, 255, 255, 0.75);
+}

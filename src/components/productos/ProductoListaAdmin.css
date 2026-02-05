@@ -1,0 +1,52 @@
+.productoListaAdmin {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.productoListaEmpty {
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(11, 18, 32, 0.12);
+}
+
+.productoFilaAdmin {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(11, 18, 32, 0.12);
+}
+
+.productoFilaNombre {
+  font-weight: 700;
+}
+
+.productoFilaMeta {
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.productoFilaAcciones {
+  display: flex;
+  gap: 8px;
+}
+
+.botonMini {
+  padding: 8px 10px;
+  font-weight: 650;
+}
+
+.botonPeligro {
+  border-color: rgba(217, 45, 32, 0.35);
+}
+
+.botonPeligro:hover {
+  border-color: rgba(217, 45, 32, 0.6);
+}

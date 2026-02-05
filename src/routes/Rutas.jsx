@@ -3,10 +3,11 @@ import { Routes, Route } from "react-router-dom";
 import Inicio from "../pages/Inicio.jsx";
 import Acceso from "../pages/Acceso.jsx";
 import Compra from "../pages/Compra.jsx";
+import ProductosAdmin from "../pages/ProductosAdmin.jsx";
 import Error from "../pages/Error.jsx";
 
-import RutaPrivada from "./RutaPrivada.jsx";
 import ProveedorCompra from "../context/ProveedorCompra.jsx";
+import ProveedorProductos from "../context/ProveedorProductos.jsx";
 
 const Rutas = () => {
   return (
@@ -17,11 +18,20 @@ const Rutas = () => {
       <Route
         path="/compra"
         element={
-          <RutaPrivada>
-            <ProveedorCompra>
+          <ProveedorCompra>
+            <ProveedorProductos>
               <Compra />
-            </ProveedorCompra>
-          </RutaPrivada>
+            </ProveedorProductos>
+          </ProveedorCompra>
+        }
+      />
+
+      <Route
+        path="/productos"
+        element={
+          <ProveedorProductos>
+            <ProductosAdmin />
+          </ProveedorProductos>
         }
       />
 

@@ -4,8 +4,8 @@ import { supabase } from "../supabase/supabaseClient.js";
 export const ProductosContext = createContext(null);
 
 /*
-  Contexto para el catálogo de productos (products).
-  Se carga de Supabase y se prepara una lista para mostrar con filtro y orden.
+  Contexto del catálogo (tabla products).
+  Aquí se carga, se filtra/ordena y también se hace el CRUD (crear/editar/borrar).
 */
 const ProveedorProductos = ({ children }) => {
   const [catalogo, setCatalogo] = useState([]);
@@ -19,6 +19,9 @@ const ProveedorProductos = ({ children }) => {
 
   // ordenarPor: "name" | "price" | "weight"
   const [ordenarPor, setOrdenarPor] = useState("name");
+
+  // Producto seleccionado para editar
+  const [productoEditando, setProductoEditando] = useState(null);
 
   const cargarCatalogo = async () => {
     try {
@@ -41,7 +44,7 @@ const ProveedorProductos = ({ children }) => {
     }
   };
 
-  // Aplica un filtro (solo uno cada vez)
+  // ---- Filtros (solo uno cada vez) ----
   const cambiarFiltro = (tipo) => {
     setFiltroTipo(tipo);
     setFiltroValor("");
@@ -65,6 +68,89 @@ const ProveedorProductos = ({ children }) => {
   const limpiarFiltro = () => {
     setFiltroTipo("ninguno");
     setFiltroValor("");
+  };
+
+  // ---- CRUD de productos ----
+  const crearProducto = async (nuevo) => {
+    try {
+      setCargando(true);
+      setError("");
+
+      const payload = {
+        name: nuevo.name,
+        price: nuevo.price,
+        weight: nuevo.weight,
+        image_url: nuevo.image_url,
+        description: nuevo.description,
+      };
+
+      const resp = await supabase.from("products").insert(payload);
+      if (resp.error) throw resp.error;
+
+      await cargarCatalogo();
+    } catch (e) {
+      const msg = e && e.message ? e.message : "Error al crear el producto";
+      setError(msg);
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  const borrarProducto = async (id) => {
+    try {
+      setCargando(true);
+      setError("");
+
+      const resp = await supabase.from("products").delete().eq("id", id);
+      if (resp.error) throw resp.error;
+
+      // Si estaba seleccionado, se limpia
+      setProductoEditando((prev) => {
+        if (prev && prev.id === id) return null;
+        return prev;
+      });
+
+      await cargarCatalogo();
+    } catch (e) {
+      const msg = e && e.message ? e.message : "Error al borrar el producto";
+      setError(msg);
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  const seleccionarProducto = (producto) => {
+    setProductoEditando(producto ? producto : null);
+  };
+
+  const limpiarEdicion = () => {
+    setProductoEditando(null);
+  };
+
+  const actualizarProducto = async (id, cambios) => {
+    try {
+      setCargando(true);
+      setError("");
+
+      const payload = {
+        name: cambios.name,
+        price: cambios.price,
+        weight: cambios.weight,
+        image_url: cambios.image_url,
+        description: cambios.description,
+      };
+
+      const resp = await supabase.from("products").update(payload).eq("id", id);
+      if (resp.error) throw resp.error;
+
+      await cargarCatalogo();
+      setProductoEditando(null);
+    } catch (e) {
+      const msg = e && e.message ? e.message : "Error al actualizar el producto";
+      setError(msg);
+    } finally {
+      setCargando(false);
+    }
   };
 
   // Recalcular lista mostrada cuando cambien datos, filtro u ordenación
@@ -150,14 +236,12 @@ const ProveedorProductos = ({ children }) => {
     mostrados,
     cargando,
     error,
+    setError,
 
-    // estado de filtro/orden
+    // filtro/orden
     filtroTipo,
     filtroValor,
     ordenarPor,
-
-    // acciones
-    cargarCatalogo,
     cambiarFiltro,
     filtrarPorNombre,
     filtrarPorPrecioMax,
@@ -168,6 +252,16 @@ const ProveedorProductos = ({ children }) => {
     // resumen
     totalMostrados,
     precioMedio,
+
+    // edición
+    productoEditando,
+    seleccionarProducto,
+    limpiarEdicion,
+
+    // crud
+    crearProducto,
+    borrarProducto,
+    actualizarProducto,
   };
 
   return (
