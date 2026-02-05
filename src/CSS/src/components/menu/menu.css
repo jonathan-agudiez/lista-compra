@@ -1,0 +1,53 @@
+.menu {
+  display: block;
+}
+
+.menuFila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.menuTitulo {
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: linear-gradient(
+      180deg,
+      rgba(91, 140, 255, 0.18),
+      rgba(120, 240, 212, 0.14)
+    );
+  border: 1px solid rgba(91, 140, 255, 0.22);
+}
+
+.menuLinks {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.navlink {
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(11, 18, 32, 0.12);
+  background: rgba(255, 255, 255, 0.7);
+  color: rgba(11, 18, 32, 0.86);
+  transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+}
+
+.navlink:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-1);
+  border-color: rgba(91, 140, 255, 0.35);
+}
+
+.navlink.active {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(91, 140, 255, 0.55);
+  box-shadow: var(--focus);
+  font-weight: 700;
+}

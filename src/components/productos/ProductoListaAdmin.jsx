@@ -1,4 +1,6 @@
 import useProductos from "../../hooks/useProductos.js";
+import { convertirEuros } from "../functions/functions.js";
+import { convertirPeso } from "../functions/functions.js";
 import "./ProductoListaAdmin.css";
 
 /*
@@ -30,8 +32,8 @@ const ProductoListaAdmin = () => {
             <div className="productoFilaInfo">
               <div className="productoFilaNombre">{p.name}</div>
               <div className="productoFilaMeta">
-                <span>{p.price != null ? p.price + " €" : "—"}</span>
-                <span>{p.weight != null ? p.weight + " g" : "—"}</span>
+                <span>{p.price != null ? convertirEuros(p.price) : "—"}</span>
+                <span>{p.weight != null ? convertirPeso(p.weight) + " g" : "—"}</span>
               </div>
             </div>
 

@@ -76,3 +76,38 @@
     height: 160px;
   }
 }
+
+
+/* --- 6.10: extras de cantidad y totales --- */
+.itemCantidad {
+  margin-top: 6px;
+}
+
+.itemCantidadInput {
+  margin-top: 6px;
+  max-width: 140px;
+}
+
+.listaTotales {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.listaTotalesFila {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.listaAviso {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(217, 45, 32, 0.18);
+  color: rgba(255, 255, 255, 0.92);
+}

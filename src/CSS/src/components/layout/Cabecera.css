@@ -1,0 +1,24 @@
+.cabecera {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.92),
+      rgba(255, 255, 255, 0.84)
+    );
+  border: 1px solid var(--surface-border);
+  box-shadow: var(--shadow-1);
+  backdrop-filter: blur(10px);
+}
+
+.cabeceraFila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}

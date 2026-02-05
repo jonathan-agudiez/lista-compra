@@ -1,0 +1,26 @@
+.panelDetalle {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.bloqueForm {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.bloqueTitle {
+  font-weight: 800;
+  letter-spacing: -0.2px;
+}
+
+.panelDetalleNota {
+  font-size: 12px;
+  color: var(--muted-2);
+}
+
+.errorBox {
+  border: 1px solid rgba(217, 45, 32, 0.35);
+  background: rgba(217, 45, 32, 0.08);
+  padding: 12px;
+  border-radius: var(--radius);
+}

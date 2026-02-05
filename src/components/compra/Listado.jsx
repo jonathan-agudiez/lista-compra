@@ -3,40 +3,57 @@ import "./Listado.css";
 import { convertirEuros, convertirPeso } from "../functions/functions.js";
 
 /*
-  Este componente muestra los productos que hay dentro
-  de la lista que está seleccionada.
+  Se muestran los productos de la lista seleccionada.
+  También se muestran los totales y un aviso si pesa mucho.
 */
 const Listado = () => {
-  const { items, listaActiva, cargando, quitarProductoDeLista } = useCompra();
-  const total = items.length;
+  const {
+    items,
+    listaActiva,
+    cargando,
+    quitarProductoDeLista,
+    cambiarCantidad,
+    pesoTotal,
+    precioTotal,
+    umbralCoche,
+    formatearFecha,
+  } = useCompra();
+
+  const totalLineas = items.length;
+
+  // Total de unidades (sumando cantidades)
+  let totalUnidades = 0;
+  for (let i = 0; i < items.length; i++) {
+    const q = items[i].quantity != null ? Number(items[i].quantity) : 1;
+    totalUnidades += q;
+  }
+
+  const nombreLista = listaActiva && listaActiva.name ? listaActiva.name : "";
+  const fechaLista =
+    listaActiva && listaActiva.created_at ? formatearFecha(listaActiva.created_at) : "";
+
+  const avisoCoche = pesoTotal > umbralCoche;
 
   return (
     <div className="lista">
       <div className="listaMeta">
-        <span>Total: {total}</span>
+        <span>Productos: {totalLineas}</span>
+        <span>Unidades: {totalUnidades}</span>
 
-        {/* Si hay lista activa, se muestra el nombre */}
-        {listaActiva && listaActiva.name ? (
-          <span className="textSmall">Lista: {listaActiva.name}</span>
-        ) : (
-          ""
-        )}
+        {nombreLista ? <span className="textSmall">Lista: {nombreLista}</span> : ""}
+        {fechaLista ? <span className="textSmall">Creada: {fechaLista}</span> : ""}
       </div>
 
-      {/* Si no hay lista seleccionada */}
       {!listaActiva ? (
         <div className="itemEmpty">
           No hay lista seleccionada. Crea una desde el panel de la derecha.
         </div>
-      ) : total === 0 ? (
-        <div className="itemEmpty">
-          Todavía no hay productos en esta lista.
-        </div>
+      ) : totalLineas === 0 ? (
+        <div className="itemEmpty">Todavía no hay productos en esta lista.</div>
       ) : (
         items.map((row) => (
           <article key={row.product_id} className="item">
             <div className="itemLeft">
-              {/* Si el producto tiene imagen, se muestra */}
               {row.product && row.product.image_url ? (
                 <img
                   src={row.product.image_url}
@@ -48,25 +65,44 @@ const Listado = () => {
               )}
 
               <div>
-                {/* Nombre del producto */}
                 <div className="itemTitulo">
                   {row.product && row.product.name ? row.product.name : "(sin nombre)"}
                 </div>
 
                 <div className="itemDetalles">
-                  {/* Peso si existe */}
                   {row.product && row.product.weight != null ? (
                     <span>Peso: {convertirPeso(row.product.weight)} g</span>
                   ) : (
                     ""
                   )}
 
-                  {/* Precio si existe */}
                   {row.product && row.product.price != null ? (
                     <span>Precio: {convertirEuros(row.product.price)}</span>
                   ) : (
                     ""
                   )}
+
+                  <span>Cantidad: {row.quantity != null ? row.quantity : 1}</span>
+                </div>
+
+                <div className="itemCantidad">
+                  <label className="textSmall">
+                    Cambiar cantidad
+                    <input
+                      className="input itemCantidadInput"
+                      type="number"
+                      min="1"
+                      value={row.quantity != null ? row.quantity : 1}
+                      onChange={(e) =>
+                        cambiarCantidad({
+                          list_id: row.list_id,
+                          product_id: row.product_id,
+                          quantity: e.target.value,
+                        })
+                      }
+                      disabled={cargando}
+                    />
+                  </label>
                 </div>
               </div>
             </div>
@@ -76,7 +112,7 @@ const Listado = () => {
               type="button"
               onClick={() =>
                 quitarProductoDeLista({
-                  list_id: listaActiva.id,
+                  list_id: row.list_id,
                   product_id: row.product_id,
                 })
               }
@@ -86,6 +122,25 @@ const Listado = () => {
             </button>
           </article>
         ))
+      )}
+
+      {listaActiva ? (
+        <div className="listaTotales">
+          <div className="listaTotalesFila">
+            <span>Peso total: {convertirPeso(pesoTotal)} g</span>
+            <span>Total: {convertirEuros(precioTotal)}</span>
+          </div>
+
+          {avisoCoche ? (
+            <div className="listaAviso">
+              Aviso: el peso es alto, quizá sea mejor coger el coche.
+            </div>
+          ) : (
+            ""
+          )}
+        </div>
+      ) : (
+        ""
       )}
     </div>
   );

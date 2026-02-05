@@ -1,6 +1,8 @@
 import useProductos from "../../hooks/useProductos.js";
 import useSesion from "../../hooks/useSesion.js";
 import FiltroProductos from "./FiltroProductos.jsx";
+import { convertirEuros } from "../functions/functions.js";
+import { convertirPeso } from "../functions/functions.js";
 import "./ProductosListado.css";
 
 /*
@@ -33,7 +35,7 @@ const ProductosListado = () => {
         <div className="productosResumen">
           <span>Mostrados: {totalMostrados}</span>
           <span>
-            Precio medio: {totalMostrados > 0 ? precioMedio.toFixed(2) + " €" : "—"}
+            Precio medio: {totalMostrados > 0 ? convertirEuros(precioMedio) : "—"}
           </span>
         </div>
 
@@ -49,8 +51,8 @@ const ProductosListado = () => {
                   <div className="productoNombre">{p.name}</div>
 
                   <div className="productoMeta">
-                    <span>Peso: {p.weight != null ? p.weight + " g" : "—"}</span>
-                    <span>Precio: {p.price != null ? p.price + " €" : "—"}</span>
+                    <span>Peso: {p.weight != null ? convertirPeso(p.weight) + " g" : "—"}</span>
+                    <span>Precio: {p.price != null ? convertirEuros(p.price)  : "—"}</span>
                   </div>
                 </div>
 

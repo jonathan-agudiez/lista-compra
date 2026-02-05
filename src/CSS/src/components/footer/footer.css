@@ -1,0 +1,31 @@
+.pie {
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--surface-border);
+  box-shadow: var(--shadow-1);
+  backdrop-filter: blur(10px);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.pieTexto {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.pieBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(11, 18, 32, 0.12);
+  color: rgba(11, 18, 32, 0.8);
+  font-size: 12px;
+}

@@ -6,7 +6,7 @@ import "./PanelDetalle.css";
 /*
   Este panel tiene dos formularios:
   1) Crear una lista
-  2) Añadir un producto del catálogo a la lista activa
+  2) Añadir un producto del catálogo a la lista activa (con cantidad)
 */
 const PanelDetalle = () => {
   const {
@@ -25,7 +25,6 @@ const PanelDetalle = () => {
   const enviarCrearLista = async (e) => {
     e.preventDefault();
 
-    // Si está vacío, no se envía
     if (nombreLista.trim() === "") return;
 
     await crearLista({ name: nombreLista.trim() });
@@ -34,28 +33,28 @@ const PanelDetalle = () => {
 
   // ---- Añadir producto existente ----
   const [productoSeleccionado, setProductoSeleccionado] = useState("");
+  const [cantidad, setCantidad] = useState(1);
 
   const enviarAnadir = async (e) => {
     e.preventDefault();
 
-    // Si no hay lista seleccionada, se muestra un error
     if (!listaActiva || !listaActiva.id) {
       setError("Primero crea o selecciona una lista");
       return;
     }
 
-    // Si no se ha elegido producto, no se envía
     if (productoSeleccionado === "") return;
 
     await anadirProductoALista({
       list_id: listaActiva.id,
       product_id: productoSeleccionado,
+      quantity: cantidad,
     });
 
     setProductoSeleccionado("");
+    setCantidad(1);
   };
 
-  // Si catalogo viene null/undefined, se usa un array vacío
   const catalogoSeguro = catalogo ? catalogo : [];
 
   const opcionesCatalogo = catalogoSeguro.map((p) => {
@@ -65,7 +64,6 @@ const PanelDetalle = () => {
     };
   });
 
-  // Texto para mostrar la lista activa sin usar ?? ni optional chaining
   const nombreListaActiva =
     listaActiva && listaActiva.name ? listaActiva.name : "(ninguna)";
 
@@ -115,6 +113,18 @@ const PanelDetalle = () => {
                 </option>
               ))}
             </select>
+          </label>
+
+          <label>
+            Cantidad
+            <input
+              className="input"
+              type="number"
+              min="1"
+              value={cantidad}
+              onChange={(e) => setCantidad(e.target.value)}
+              disabled={cargando}
+            />
           </label>
 
           <div className="panelDetalleNota">
