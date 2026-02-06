@@ -298,7 +298,6 @@ const ProveedorCompra = ({ children }) => {
         if (errorSupabase) throw errorSupabase;
 
         await cargarItems(list_id);
-      notificar("Cantidad actualizada", "success");
       } catch (e) {
         const msg = e && e.message ? e.message : "Error al cambiar la cantidad";
         setError(msg);
