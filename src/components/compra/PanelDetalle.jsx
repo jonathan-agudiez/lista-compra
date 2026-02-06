@@ -1,5 +1,6 @@
 import { useState } from "react";
 import useCompra from "../../hooks/useCompra.js";
+import useNotificacion from "../../hooks/useNotificacion.js";
 import "./panel.css";
 import "./PanelDetalle.css";
 
@@ -11,13 +12,12 @@ import "./PanelDetalle.css";
 const PanelDetalle = () => {
   const {
     cargando,
-    error,
-    setError,
     listaActiva,
     catalogo,
     crearLista,
     anadirProductoALista,
   } = useCompra();
+  const { notificar } = useNotificacion();
 
   // ---- Crear lista ----
   const [nombreLista, setNombreLista] = useState("");
@@ -25,10 +25,12 @@ const PanelDetalle = () => {
   const enviarCrearLista = async (e) => {
     e.preventDefault();
 
-    if (nombreLista.trim() === "") return;
+    const nombre = nombreLista.trim();
 
-    await crearLista({ name: nombreLista.trim() });
-    setNombreLista("");
+    if (nombre !== "") {
+      await crearLista({ name: nombre });
+      setNombreLista("");
+    }
   };
 
   // ---- Añadir producto existente ----
@@ -39,20 +41,21 @@ const PanelDetalle = () => {
     e.preventDefault();
 
     if (!listaActiva || !listaActiva.id) {
-      setError("Primero crea o selecciona una lista");
-      return;
+      notificar("Primero crea o selecciona una lista", "warning");
+    } else if (productoSeleccionado === "") {
+      // No se hace nada si no se selecciona producto
+    } else {
+      const cantidadNum = Number(cantidad);
+
+      await anadirProductoALista({
+        list_id: listaActiva.id,
+        product_id: productoSeleccionado,
+        quantity: cantidadNum,
+      });
+
+      setProductoSeleccionado("");
+      setCantidad(1);
     }
-
-    if (productoSeleccionado === "") return;
-
-    await anadirProductoALista({
-      list_id: listaActiva.id,
-      product_id: productoSeleccionado,
-      quantity: cantidad,
-    });
-
-    setProductoSeleccionado("");
-    setCantidad(1);
   };
 
   const catalogoSeguro = catalogo ? catalogo : [];
@@ -88,7 +91,7 @@ const PanelDetalle = () => {
             />
           </label>
 
-          <button className="boton" type="submit" disabled={cargando}>
+          <button className="btn btn--secondary" type="submit" disabled={cargando}>
             Crear
           </button>
         </form>
@@ -131,12 +134,10 @@ const PanelDetalle = () => {
             Lista activa: <strong>{nombreListaActiva}</strong>
           </div>
 
-          <button className="boton" type="submit" disabled={cargando}>
+          <button className="btn btn--secondary" type="submit" disabled={cargando}>
             Añadir
           </button>
         </form>
-
-        {error ? <div className="errorBox">{error}</div> : ""}
       </div>
     </section>
   );

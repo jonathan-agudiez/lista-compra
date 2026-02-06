@@ -8,24 +8,31 @@ import Footer from "./components/footer/Footer.jsx";
 import CabeceraFila from "./components/layout/CabeceraFila.jsx";
 
 import ProveedorSesion from "./context/ProveedorSesion.jsx";
+import ProveedorNotificacion from "./context/NotificacionContext.jsx";
+import Notificacion from "./components/ui/Notificacion.jsx";
+
 import Rutas from "./routes/Rutas.jsx";
 
 function App() {
   return (
     <BrowserRouter>
-      <ProveedorSesion>
-        <ContenedorGeneral>
-          <Cabecera>
-            <CabeceraFila />
-          </Cabecera>
+      <ProveedorNotificacion>
+        <ProveedorSesion>
+          <ContenedorGeneral>
+            <Notificacion />
 
-          <ContenidoPrincipal>
-            <Rutas />
-          </ContenidoPrincipal>
+            <Cabecera>
+              <CabeceraFila />
+            </Cabecera>
 
-          <Footer />
-        </ContenedorGeneral>
-      </ProveedorSesion>
+            <ContenidoPrincipal>
+              <Rutas />
+            </ContenidoPrincipal>
+
+            <Footer />
+          </ContenedorGeneral>
+        </ProveedorSesion>
+      </ProveedorNotificacion>
     </BrowserRouter>
   );
 }

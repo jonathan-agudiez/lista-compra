@@ -1,3 +1,4 @@
+import "./FilaCabecera.css";
 import Menu from "../menu/Menu.jsx";
 import ZonaSesion from "../sesion/ZonaSesion.jsx";
 

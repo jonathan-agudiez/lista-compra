@@ -17,21 +17,23 @@ const ProductoCrear = () => {
   const enviar = async (e) => {
     e.preventDefault();
 
-    if (!name.trim()) return;
+    const nombre = name.trim();
 
-    await crearProducto({
-      name: name.trim(),
-      price: price === "" ? null : Number(price),
-      weight: weight === "" ? null : Number(weight),
-      image_url: imageUrl.trim() ? imageUrl.trim() : null,
-      description: description.trim() ? description.trim() : null,
-    });
+    if (nombre !== "") {
+      await crearProducto({
+        name: nombre,
+        price: price === "" ? null : Number(price),
+        weight: weight === "" ? null : Number(weight),
+        image_url: imageUrl.trim() ? imageUrl.trim() : null,
+        description: description.trim() ? description.trim() : null,
+      });
 
-    setName("");
-    setPrice("");
-    setWeight("");
-    setImageUrl("");
-    setDescription("");
+      setName("");
+      setPrice("");
+      setWeight("");
+      setImageUrl("");
+      setDescription("");
+    }
   };
 
   return (
@@ -98,7 +100,7 @@ const ProductoCrear = () => {
         />
       </label>
 
-      <button className="boton" type="submit" disabled={cargando}>
+      <button className="btn btn--primary" type="submit" disabled={cargando}>
         Guardar
       </button>
     </form>

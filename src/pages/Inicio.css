@@ -1,32 +1,49 @@
-.inicio {
+.inicio{
   display: grid;
-  gap: var(--space-4);
+  gap: 18px;
 }
 
-.inicioHero {
-  display: grid;
-  gap: var(--space-3);
-  padding: var(--space-5);
+.inicioHero{
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  background: rgba(255, 255, 255, 0.68);
-  border: 1px solid var(--surface-border);
-  box-shadow: var(--shadow-1);
+  box-shadow: var(--shadow-md);
+  padding: 22px;
+  overflow: hidden;
+  position: relative;
 }
 
-.inicioHero h2 {
-  margin: 0;
-  font-size: 26px;
-  font-weight: 950;
-  letter-spacing: -0.8px;
+.inicioHero::before{
+  content:"";
+  position:absolute;
+  inset: -1px;
+  background: radial-gradient(1200px 260px at 10% 0%, rgba(56,97,251,.12), transparent 55%),
+              radial-gradient(900px 240px at 90% 20%, rgba(56,97,251,.10), transparent 60%);
+  pointer-events:none;
 }
 
-.inicioHero p {
-  margin: 0;
+.inicioHero > *{ position: relative; }
+
+.inicioHero h2{
+  margin: 0 0 8px;
+  font-size: 32px;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  font-weight: 800;
+}
+
+.inicioHero p{
+  margin: 0 0 16px;
   color: var(--muted);
+  font-weight: 400;
 }
 
-.inicioCtas {
+.inicioCtas{
   display: flex;
-  gap: var(--space-2);
+  gap: 10px;
   flex-wrap: wrap;
+}
+
+.inicioCtas .navlink{
+  border-radius: 14px;
 }

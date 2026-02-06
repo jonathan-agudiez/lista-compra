@@ -11,9 +11,11 @@ const PanelListado = () => {
 
   return (
     <section className="panel">
-      <div className="panelTitulo">
-        <h3>Listado</h3>
-        <AccionesListado />
+      <div className="panelListadoHeader">
+        <div className="panelListadoHeaderRow">
+          <h3>Listado</h3>
+          <AccionesListado />
+        </div>
       </div>
 
       <div className="panelListadoSelector">

@@ -52,7 +52,7 @@ const Listado = () => {
         <div className="itemEmpty">Todavía no hay productos en esta lista.</div>
       ) : (
         items.map((row) => (
-          <article key={row.product_id} className="item">
+          <article key={row.product_id} className="item rowHover">
             <div className="itemLeft">
               {row.product && row.product.image_url ? (
                 <img
@@ -64,62 +64,65 @@ const Listado = () => {
                 ""
               )}
 
-              <div>
+              <div className="itemInfo">
                 <div className="itemTitulo">
                   {row.product && row.product.name ? row.product.name : "(sin nombre)"}
                 </div>
+</div>
+            </div>
 
-                <div className="itemDetalles">
-                  {row.product && row.product.weight != null ? (
-                    <span>Peso: {convertirPeso(row.product.weight)} g</span>
-                  ) : (
-                    ""
-                  )}
-
-                  {row.product && row.product.price != null ? (
-                    <span>Precio: {convertirEuros(row.product.price)}</span>
-                  ) : (
-                    ""
-                  )}
-
-                  <span>Cantidad: {row.quantity != null ? row.quantity : 1}</span>
-                </div>
-
-                <div className="itemCantidad">
-                  <label className="textSmall">
-                    Cambiar cantidad
-                    <input
-                      className="input itemCantidadInput"
-                      type="number"
-                      min="1"
-                      value={row.quantity != null ? row.quantity : 1}
-                      onChange={(e) =>
-                        cambiarCantidad({
-                          list_id: row.list_id,
-                          product_id: row.product_id,
-                          quantity: e.target.value,
-                        })
-                      }
-                      disabled={cargando}
-                    />
-                  </label>
-                </div>
+            <div className="itemCol itemCol--peso">
+              <div className="itemColLabel">Peso</div>
+              <div className="itemColValue">
+                {row.product && row.product.weight != null
+                  ? `${convertirPeso(row.product.weight)} g`
+                  : "—"}
               </div>
             </div>
 
-            <button
-              className="boton"
-              type="button"
-              onClick={() =>
-                quitarProductoDeLista({
-                  list_id: row.list_id,
-                  product_id: row.product_id,
-                })
-              }
-              disabled={cargando}
-            >
-              Quitar
-            </button>
+            <div className="itemCol itemCol--precio">
+              <div className="itemColLabel">Precio</div>
+              <div className="itemColValue">
+                {row.product && row.product.price != null
+                  ? convertirEuros(row.product.price)
+                  : "—"}
+              </div>
+            </div>
+
+            <div className="itemCantidad">
+              <input
+                className="input itemCantidadInput"
+                type="number"
+                min="1"
+                aria-label="Cantidad"
+                value={row.quantity != null ? row.quantity : 1}
+                onChange={(e) =>
+                  cambiarCantidad({
+                    list_id: row.list_id,
+                    product_id: row.product_id,
+                    quantity: e.target.value,
+                  })
+                }
+                disabled={cargando}
+              />
+            </div>
+
+            <div className="itemAction">
+              <button
+                className="btn btn--danger btn--icon"
+                type="button"
+                onClick={() =>
+                  quitarProductoDeLista({
+                    list_id: row.list_id,
+                    product_id: row.product_id,
+                  })
+                }
+                disabled={cargando}
+                title="Quitar de la lista"
+              >
+                ✕
+              </button>
+            </div>
           </article>
         ))
       )}

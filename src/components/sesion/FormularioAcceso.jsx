@@ -7,7 +7,7 @@ import "./formularioAcceso.css";
   Se usa el mismo formulario y se cambia el modo con botones.
 */
 const FormularioAcceso = () => {
-  const { signIn, signUp, cargando, error } = useSesion();
+  const { signIn, signUp, cargando } = useSesion();
 
   const [modo, setModo] = useState("login"); // login o registro
   const [email, setEmail] = useState("");
@@ -45,7 +45,7 @@ const FormularioAcceso = () => {
           <div className="formAccesoTabs">
             <button
               type="button"
-              className="boton"
+              className="btn btn--secondary"
               onClick={() => setModo("login")}
               disabled={cargando}
               aria-pressed={modo === "login"}
@@ -55,7 +55,7 @@ const FormularioAcceso = () => {
 
             <button
               type="button"
-              className="boton"
+              className="btn btn--secondary"
               onClick={() => setModo("registro")}
               disabled={cargando}
               aria-pressed={modo === "registro"}
@@ -107,12 +107,10 @@ const FormularioAcceso = () => {
           />
         </div>
 
-        <button className="boton" type="submit" disabled={cargando}>
+        <button className="btn btn--primary" type="submit" disabled={cargando}>
           {textoBoton}
         </button>
-
-        {error ? <div className="formAccesoError">{error}</div> : ""}
-      </form>
+</form>
     </div>
   );
 };

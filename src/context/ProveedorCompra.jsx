@@ -1,15 +1,19 @@
 import { createContext, useEffect, useState } from "react";
 import { supabase } from "../supabase/supabaseClient.js";
 import useSesion from "../hooks/useSesion.js";
+import useNotificacion from "../hooks/useNotificacion.js";
 
 export const CompraContext = createContext(null);
 
 /*
-  Contexto de la parte "compra".
-  Se guardan listas, catálogo y productos de la lista activa.
+  Contexto de compra:
+  - listas del usuario
+  - catálogo (products)
+  - items de la lista activa (con quantity)
 */
 const ProveedorCompra = ({ children }) => {
   const { user } = useSesion();
+  const { notificar } = useNotificacion();
 
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState("");
@@ -29,6 +33,7 @@ const ProveedorCompra = ({ children }) => {
 
   const formatearFecha = (iso) => {
     if (!iso) return "";
+
     const fecha = new Date(iso);
     if (Number.isNaN(fecha.getTime())) return "";
 
@@ -40,47 +45,49 @@ const ProveedorCompra = ({ children }) => {
   };
 
   const cargarListas = async () => {
-    if (!user) return;
+    if (user) {
+      try {
+        setCargando(true);
+        setError("");
 
-    try {
-      setCargando(true);
-      setError("");
+        const respuesta = await supabase
+          .from("shopping_lists")
+          .select("id, name, owner_id, created_at")
+          .eq("owner_id", user.id)
+          .order("created_at", { ascending: false });
 
-      const respuesta = await supabase
-        .from("shopping_lists")
-        .select("id, name, owner_id, created_at")
-        .eq("owner_id", user.id)
-        .order("created_at", { ascending: false });
+        const data = respuesta.data;
+        const errorSupabase = respuesta.error;
 
-      const data = respuesta.data;
-      const errorSupabase = respuesta.error;
+        if (errorSupabase) throw errorSupabase;
 
-      if (errorSupabase) throw errorSupabase;
+        const listasCargadas = data ? data : [];
+        setListas(listasCargadas);
 
-      const listasCargadas = data ? data : [];
-      setListas(listasCargadas);
+        // Si la lista activa no existe, se selecciona la primera
+        let nuevaActiva = null;
 
-      // Si la lista activa no existe, se selecciona la primera
-      let nuevaActiva = null;
-
-      if (listaActiva && listaActiva.id) {
-        for (let i = 0; i < listasCargadas.length; i++) {
-          if (listasCargadas[i].id === listaActiva.id) {
-            nuevaActiva = listasCargadas[i];
+        if (listaActiva && listaActiva.id) {
+          for (let i = 0; i < listasCargadas.length; i++) {
+            if (listasCargadas[i].id === listaActiva.id) {
+              nuevaActiva = listasCargadas[i];
+            }
           }
         }
-      }
 
-      if (!nuevaActiva) {
-        if (listasCargadas.length > 0) nuevaActiva = listasCargadas[0];
-      }
+        if (!nuevaActiva) {
+          nuevaActiva = listasCargadas.length > 0 ? listasCargadas[0] : null;
+        }
 
-      setListaActiva(nuevaActiva);
-    } catch (e) {
-      const msg = e && e.message ? e.message : "Error al cargar las listas";
-      setError(msg);
-    } finally {
-      setCargando(false);
+        setListaActiva(nuevaActiva);
+      } catch (e) {
+        const msg = e && e.message ? e.message : "Error al cargar las listas";
+        setError(msg);
+
+        notificar(msg, "error");
+} finally {
+        setCargando(false);
+      }
     }
   };
 
@@ -103,7 +110,9 @@ const ProveedorCompra = ({ children }) => {
     } catch (e) {
       const msg = e && e.message ? e.message : "Error al cargar el catálogo";
       setError(msg);
-    } finally {
+
+      notificar(msg, "error");
+} finally {
       setCargando(false);
     }
   };
@@ -111,238 +120,239 @@ const ProveedorCompra = ({ children }) => {
   const cargarItems = async (listId) => {
     if (!listId) {
       setItems([]);
-      return;
-    }
+    } else {
+      try {
+        setCargando(true);
+        setError("");
 
-    try {
-      setCargando(true);
-      setError("");
-
-      const respuesta = await supabase
-        .from("shopping_list_items")
-        .select(
+        const respuesta = await supabase
+          .from("shopping_list_items")
+          .select(
+            `
+            list_id,
+            product_id,
+            quantity,
+            products:products (
+              id,
+              name,
+              weight,
+              price,
+              image_url,
+              description
+            )
           `
-          list_id,
-          product_id,
-          quantity,
-          products:products (
-            id,
-            name,
-            weight,
-            price,
-            image_url,
-            description
           )
-        `
-        )
-        .eq("list_id", listId);
+          .eq("list_id", listId);
 
-      const data = respuesta.data;
-      const errorSupabase = respuesta.error;
+        const data = respuesta.data;
+        const errorSupabase = respuesta.error;
 
-      if (errorSupabase) throw errorSupabase;
+        if (errorSupabase) throw errorSupabase;
 
-      const filas = data ? data : [];
-      const normalizados = [];
-
-      for (let i = 0; i < filas.length; i++) {
-        const row = filas[i];
-
-        normalizados.push({
-          list_id: row.list_id,
-          product_id: row.product_id,
-          quantity: row.quantity != null ? row.quantity : 1,
-          product: row.products ? row.products : null,
+        const normalizados = (data ? data : []).map((row) => {
+          return {
+            list_id: row.list_id,
+            product_id: row.product_id,
+            quantity: row.quantity != null ? row.quantity : 1,
+            product: row.products ? row.products : null,
+          };
         });
-      }
 
-      setItems(normalizados);
-    } catch (e) {
-      const msg =
-        e && e.message ? e.message : "Error al cargar los productos de la lista";
-      setError(msg);
-    } finally {
-      setCargando(false);
+        setItems(normalizados);
+      } catch (e) {
+        const msg = e && e.message ? e.message : "Error al cargar los productos de la lista";
+        setError(msg);
+
+        notificar(msg, "error");
+} finally {
+        setCargando(false);
+      }
     }
   };
 
   const crearLista = async ({ name }) => {
-    if (!user) return;
+    if (user) {
+      try {
+        setCargando(true);
+        setError("");
 
-    try {
-      setCargando(true);
-      setError("");
+        const respuesta = await supabase
+          .from("shopping_lists")
+          .insert({ name: name, owner_id: user.id })
+          .select("id, name, owner_id, created_at")
+          .single();
 
-      const respuesta = await supabase
-        .from("shopping_lists")
-        .insert({ name: name, owner_id: user.id })
-        .select("id, name, owner_id, created_at")
-        .single();
+        const data = respuesta.data;
+        const errorSupabase = respuesta.error;
 
-      const data = respuesta.data;
-      const errorSupabase = respuesta.error;
+        if (errorSupabase) throw errorSupabase;
 
-      if (errorSupabase) throw errorSupabase;
+        await cargarListas();
+        setListaActiva(data ? data : null);
+      notificar("Lista creada", "success");
+      } catch (e) {
+        const msg = e && e.message ? e.message : "Error al crear la lista";
+        setError(msg);
 
-      await cargarListas();
-      setListaActiva(data ? data : null);
-    } catch (e) {
-      const msg = e && e.message ? e.message : "Error al crear la lista";
-      setError(msg);
-    } finally {
-      setCargando(false);
+        notificar(msg, "error");
+} finally {
+        setCargando(false);
+      }
     }
   };
 
   const borrarLista = async ({ list_id }) => {
-    if (!list_id) return;
+    if (list_id) {
+      try {
+        setCargando(true);
+        setError("");
 
-    try {
-      setCargando(true);
-      setError("");
+        const respuesta = await supabase
+          .from("shopping_lists")
+          .delete()
+          .eq("id", list_id);
 
-      // Primero se borran los items de la lista (por si no hay cascada)
-      const respItems = await supabase
-        .from("shopping_list_items")
-        .delete()
-        .eq("list_id", list_id);
+        const errorSupabase = respuesta.error;
+        if (errorSupabase) throw errorSupabase;
 
-      if (respItems.error) throw respItems.error;
+        await cargarListas();
+      notificar("Lista eliminada", "success");
+      } catch (e) {
+        const msg = e && e.message ? e.message : "Error al borrar la lista";
+        setError(msg);
 
-      const respLista = await supabase
-        .from("shopping_lists")
-        .delete()
-        .eq("id", list_id);
-
-      if (respLista.error) throw respLista.error;
-
-      await cargarListas();
-    } catch (e) {
-      const msg = e && e.message ? e.message : "Error al borrar la lista";
-      setError(msg);
-    } finally {
-      setCargando(false);
+        notificar(msg, "error");
+} finally {
+        setCargando(false);
+      }
     }
   };
 
   const anadirProductoALista = async ({ list_id, product_id, quantity }) => {
-    if (!list_id || !product_id) return;
+    if (list_id && product_id) {
+      let cantidad = Number(quantity);
+      if (!cantidad || cantidad < 1) cantidad = 1;
 
-    // Si no viene quantity, se pone 1
-    let cantidad = quantity != null ? Number(quantity) : 1;
-    if (!cantidad || cantidad < 1) cantidad = 1;
+      try {
+        setCargando(true);
+        setError("");
 
-    try {
-      setCargando(true);
-      setError("");
-
-      // Se mira si ya existe el producto en esa lista
-      const respExiste = await supabase
-        .from("shopping_list_items")
-        .select("quantity")
-        .eq("list_id", list_id)
-        .eq("product_id", product_id)
-        .maybeSingle();
-
-      if (respExiste.error) throw respExiste.error;
-
-      if (respExiste.data) {
-        const cantidadActual =
-          respExiste.data.quantity != null ? respExiste.data.quantity : 1;
-        const nuevaCantidad = cantidadActual + cantidad;
-
-        const respUpdate = await supabase
+        // Si ya existe, se actualiza sumando cantidad
+        const existe = await supabase
           .from("shopping_list_items")
-          .update({ quantity: nuevaCantidad })
+          .select("list_id, product_id, quantity")
           .eq("list_id", list_id)
-          .eq("product_id", product_id);
+          .eq("product_id", product_id)
+          .maybeSingle();
 
-        if (respUpdate.error) throw respUpdate.error;
-      } else {
-        const respInsert = await supabase
-          .from("shopping_list_items")
-          .insert({ list_id: list_id, product_id: product_id, quantity: cantidad });
+        if (existe.error) throw existe.error;
 
-        if (respInsert.error) throw respInsert.error;
+        if (existe.data) {
+          const anterior = existe.data.quantity != null ? Number(existe.data.quantity) : 1;
+          const nuevaCantidad = anterior + cantidad;
+
+          const upd = await supabase
+            .from("shopping_list_items")
+            .update({ quantity: nuevaCantidad })
+            .eq("list_id", list_id)
+            .eq("product_id", product_id);
+
+          if (upd.error) throw upd.error;
+        } else {
+          const ins = await supabase
+            .from("shopping_list_items")
+            .insert({ list_id: list_id, product_id: product_id, quantity: cantidad });
+
+          if (ins.error) throw ins.error;
+        }
+
+        await cargarItems(list_id);
+      notificar("Producto añadido", "success");
+      } catch (e) {
+        const msg = e && e.message ? e.message : "Error al añadir el producto a la lista";
+        setError(msg);
+
+        notificar(msg, "error");
+} finally {
+        setCargando(false);
       }
-
-      await cargarItems(list_id);
-    } catch (e) {
-      const msg =
-        e && e.message ? e.message : "Error al añadir el producto a la lista";
-      setError(msg);
-    } finally {
-      setCargando(false);
     }
   };
 
   const cambiarCantidad = async ({ list_id, product_id, quantity }) => {
-    if (!list_id || !product_id) return;
+    if (list_id && product_id) {
+      let cantidad = Number(quantity);
+      if (!cantidad || cantidad < 1) cantidad = 1;
 
-    let cantidad = Number(quantity);
-    if (!cantidad || cantidad < 1) cantidad = 1;
+      try {
+        setCargando(true);
+        setError("");
 
-    try {
-      setCargando(true);
-      setError("");
+        const respuesta = await supabase
+          .from("shopping_list_items")
+          .update({ quantity: cantidad })
+          .eq("list_id", list_id)
+          .eq("product_id", product_id);
 
-      const resp = await supabase
-        .from("shopping_list_items")
-        .update({ quantity: cantidad })
-        .eq("list_id", list_id)
-        .eq("product_id", product_id);
+        const errorSupabase = respuesta.error;
+        if (errorSupabase) throw errorSupabase;
 
-      if (resp.error) throw resp.error;
+        await cargarItems(list_id);
+      notificar("Cantidad actualizada", "success");
+      } catch (e) {
+        const msg = e && e.message ? e.message : "Error al cambiar la cantidad";
+        setError(msg);
 
-      await cargarItems(list_id);
-    } catch (e) {
-      const msg =
-        e && e.message ? e.message : "Error al cambiar la cantidad";
-      setError(msg);
-    } finally {
-      setCargando(false);
+        notificar(msg, "error");
+} finally {
+        setCargando(false);
+      }
     }
   };
 
   const quitarProductoDeLista = async ({ list_id, product_id }) => {
-    if (!list_id || !product_id) return;
+    if (list_id && product_id) {
+      try {
+        setCargando(true);
+        setError("");
 
-    try {
-      setCargando(true);
-      setError("");
+        const respuesta = await supabase
+          .from("shopping_list_items")
+          .delete()
+          .eq("list_id", list_id)
+          .eq("product_id", product_id);
 
-      const respuesta = await supabase
-        .from("shopping_list_items")
-        .delete()
-        .eq("list_id", list_id)
-        .eq("product_id", product_id);
+        const errorSupabase = respuesta.error;
+        if (errorSupabase) throw errorSupabase;
 
-      if (respuesta.error) throw respuesta.error;
+        await cargarItems(list_id);
+      notificar("Producto quitado", "success");
+      } catch (e) {
+        const msg = e && e.message ? e.message : "Error al quitar el producto";
+        setError(msg);
 
-      await cargarItems(list_id);
-    } catch (e) {
-      const msg = e && e.message ? e.message : "Error al quitar el producto";
-      setError(msg);
-    } finally {
-      setCargando(false);
+        notificar(msg, "error");
+} finally {
+        setCargando(false);
+      }
     }
   };
 
-  // Recalcular totales cada vez que cambian los items
+  // Recalcular totales cuando cambian los items
   useEffect(() => {
     let peso = 0;
     let precio = 0;
 
     for (let i = 0; i < items.length; i++) {
-      const row = items[i];
-      const q = row.quantity != null ? Number(row.quantity) : 1;
+      const item = items[i];
+      const q = item.quantity != null ? Number(item.quantity) : 1;
 
-      if (row.product && row.product.weight != null) {
-        peso += Number(row.product.weight) * q;
+      if (item.product && item.product.weight != null) {
+        peso += Number(item.product.weight) * q;
       }
 
-      if (row.product && row.product.price != null) {
-        precio += Number(row.product.price) * q;
+      if (item.product && item.product.price != null) {
+        precio += Number(item.product.price) * q;
       }
     }
 
@@ -350,29 +360,26 @@ const ProveedorCompra = ({ children }) => {
     setPrecioTotal(precio);
   }, [items]);
 
-  // Cuando cambia el usuario, se recargan listas y catálogo
+  // Cuando cambia el usuario, se recarga todo
   useEffect(() => {
     if (!user) {
       setListas([]);
       setListaActiva(null);
       setItems([]);
-      return;
-    }
-
-    cargarListas();
-    cargarCatalogo();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
-
-  // Cuando cambia la lista activa, se recargan los items
-  useEffect(() => {
-    if (listaActiva && listaActiva.id) {
-      cargarItems(listaActiva.id);
+      setCatalogo([]);
     } else {
-      cargarItems(null);
+      cargarListas();
+      cargarCatalogo();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [listaActiva]);
+  }, [user ? user.id : null]);
+
+  // Cuando cambia la lista activa, se recargan items
+  useEffect(() => {
+    const id = listaActiva && listaActiva.id ? listaActiva.id : null;
+    cargarItems(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listaActiva ? listaActiva.id : null]);
 
   const value = {
     cargando,
@@ -383,10 +390,6 @@ const ProveedorCompra = ({ children }) => {
     setListaActiva,
     catalogo,
     items,
-    pesoTotal,
-    precioTotal,
-    umbralCoche,
-    formatearFecha,
     cargarListas,
     cargarCatalogo,
     cargarItems,
@@ -395,11 +398,13 @@ const ProveedorCompra = ({ children }) => {
     anadirProductoALista,
     cambiarCantidad,
     quitarProductoDeLista,
+    pesoTotal,
+    precioTotal,
+    umbralCoche,
+    formatearFecha,
   };
 
-  return (
-    <CompraContext.Provider value={value}>{children}</CompraContext.Provider>
-  );
+  return <CompraContext.Provider value={value}>{children}</CompraContext.Provider>;
 };
 
 export default ProveedorCompra;

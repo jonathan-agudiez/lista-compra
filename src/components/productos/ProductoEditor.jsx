@@ -23,36 +23,39 @@ const ProductoEditor = () => {
       setWeight("");
       setImageUrl("");
       setDescription("");
-      return;
+    } else {
+      setName(productoEditando.name ? productoEditando.name : "");
+      setPrice(
+        productoEditando.price === null || productoEditando.price === undefined
+          ? ""
+          : String(productoEditando.price)
+      );
+      setWeight(
+        productoEditando.weight === null || productoEditando.weight === undefined
+          ? ""
+          : String(productoEditando.weight)
+      );
+      setImageUrl(productoEditando.image_url ? productoEditando.image_url : "");
+      setDescription(productoEditando.description ? productoEditando.description : "");
     }
-
-    setName(productoEditando.name ? productoEditando.name : "");
-    setPrice(
-      productoEditando.price === null || productoEditando.price === undefined
-        ? ""
-        : String(productoEditando.price)
-    );
-    setWeight(
-      productoEditando.weight === null || productoEditando.weight === undefined
-        ? ""
-        : String(productoEditando.weight)
-    );
-    setImageUrl(productoEditando.image_url ? productoEditando.image_url : "");
-    setDescription(productoEditando.description ? productoEditando.description : "");
   }, [productoEditando]);
 
   const enviar = async (e) => {
     e.preventDefault();
-    if (!productoEditando) return;
-    if (!name.trim()) return;
 
-    await actualizarProducto(productoEditando.id, {
-      name: name.trim(),
-      price: price === "" ? null : Number(price),
-      weight: weight === "" ? null : Number(weight),
-      image_url: imageUrl.trim() ? imageUrl.trim() : null,
-      description: description.trim() ? description.trim() : null,
-    });
+    if (productoEditando) {
+      const nombre = name.trim();
+
+      if (nombre !== "") {
+        await actualizarProducto(productoEditando.id, {
+          name: nombre,
+          price: price === "" ? null : Number(price),
+          weight: weight === "" ? null : Number(weight),
+          image_url: imageUrl.trim() ? imageUrl.trim() : null,
+          description: description.trim() ? description.trim() : null,
+        });
+      }
+    }
   };
 
   if (!productoEditando) {
@@ -127,12 +130,12 @@ const ProductoEditor = () => {
       </label>
 
       <div className="productoEditorAcciones">
-        <button className="boton" type="submit" disabled={cargando}>
+        <button className="btn btn--primary" type="submit" disabled={cargando}>
           Actualizar
         </button>
 
         <button
-          className="boton botonSec"
+          className="btn btn--secondary"
           type="button"
           onClick={limpiarEdicion}
           disabled={cargando}

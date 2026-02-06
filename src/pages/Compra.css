@@ -1,35 +1,30 @@
-.compra {
+.compra{
   display: grid;
-  gap: var(--space-4);
+  gap: 16px;
 }
 
-.compraHeader {
+.compraHeader{
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
-  gap: var(--space-3);
-  flex-wrap: wrap;
+  gap: 12px;
 }
 
-.compraHeader h2 {
+.compraHeader h2{
   margin: 0;
   font-size: 22px;
   font-weight: 900;
-  letter-spacing: -0.6px;
+  letter-spacing: -0.03em;
 }
 
-.panelCompra {
+
+.compraGrid{
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-4);
+  grid-template-columns: 1.25fr 1fr;
+  gap: 16px;
+  align-items: start;
 }
 
-.productosSeccion {
-  margin-top: 18px;
-}
-
-@media (max-width: 980px) {
-  .panelCompra {
-    grid-template-columns: 1fr;
-  }
+@media (max-width: 980px){
+  .compraGrid{ grid-template-columns: 1fr; }
 }

@@ -1,16 +1,10 @@
-.layout {
+.layout{
   min-height: 100vh;
   display: grid;
-  grid-template-rows: auto auto 1fr auto;
-  gap: var(--space-4);
-  padding: var(--space-5);
-  max-width: 1180px;
-  margin: 0 auto;
+  grid-template-rows: auto 1fr auto;
+  gap: 18px;
 }
 
-@media (max-width: 720px) {
-  .layout {
-    padding: var(--space-4);
-    gap: var(--space-3);
-  }
+.layout > *{
+  width: 100%;
 }

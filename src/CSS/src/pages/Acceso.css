@@ -1,9 +1,0 @@
-.acceso {
-  display: grid;
-  gap: var(--space-4);
-}
-
-.accesoIntro {
-  color: var(--muted);
-  margin: 0;
-}

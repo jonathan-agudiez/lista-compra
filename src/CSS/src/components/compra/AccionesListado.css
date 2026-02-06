@@ -1,6 +1,0 @@
-.accionesListado {
-  display: flex;
-  gap: var(--space-2);
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}

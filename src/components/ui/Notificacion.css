@@ -1,0 +1,37 @@
+.notiWrap{
+  position: fixed;
+  top: 76px;
+  right: 18px;
+  z-index: 60;
+  max-width: 420px;
+  width: calc(100% - 36px);
+}
+
+.noti{
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 12px 14px;
+  font-weight: 800;
+}
+
+.notiInfo{
+  border-color: rgba(56,97,251,.22);
+  background: rgba(56,97,251,.06);
+}
+
+.notiSuccess{
+  border-color: rgba(22,163,74,.22);
+  background: rgba(22,163,74,.08);
+}
+
+.notiWarning{
+  border-color: rgba(245,158,11,.25);
+  background: rgba(245,158,11,.10);
+}
+
+.notiError{
+  border-color: rgba(225,29,72,.25);
+  background: rgba(225,29,72,.08);
+}

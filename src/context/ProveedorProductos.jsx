@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import { supabase } from "../supabase/supabaseClient.js";
+import useNotificacion from "../hooks/useNotificacion.js";
 
 export const ProductosContext = createContext(null);
 
@@ -8,6 +9,7 @@ export const ProductosContext = createContext(null);
   Aquí se carga, se filtra/ordena y también se hace el CRUD (crear/editar/borrar).
 */
 const ProveedorProductos = ({ children }) => {
+  const { notificar } = useNotificacion();
   const [catalogo, setCatalogo] = useState([]);
   const [mostrados, setMostrados] = useState([]);
   const [cargando, setCargando] = useState(false);
@@ -39,7 +41,9 @@ const ProveedorProductos = ({ children }) => {
     } catch (e) {
       const msg = e && e.message ? e.message : "Error al cargar el catálogo";
       setError(msg);
-    } finally {
+
+      notificar(msg, "error");
+} finally {
       setCargando(false);
     }
   };
@@ -88,10 +92,13 @@ const ProveedorProductos = ({ children }) => {
       if (resp.error) throw resp.error;
 
       await cargarCatalogo();
+      notificar("Producto creado", "success");
     } catch (e) {
       const msg = e && e.message ? e.message : "Error al crear el producto";
       setError(msg);
-    } finally {
+
+      notificar(msg, "error");
+} finally {
       setCargando(false);
     }
   };
@@ -105,16 +112,18 @@ const ProveedorProductos = ({ children }) => {
       if (resp.error) throw resp.error;
 
       // Si estaba seleccionado, se limpia
-      setProductoEditando((prev) => {
-        if (prev && prev.id === id) return null;
-        return prev;
-      });
+      if (productoEditando && productoEditando.id === id) {
+        setProductoEditando(null);
+      }
 
       await cargarCatalogo();
+      notificar("Producto eliminado", "success");
     } catch (e) {
       const msg = e && e.message ? e.message : "Error al borrar el producto";
       setError(msg);
-    } finally {
+
+      notificar(msg, "error");
+} finally {
       setCargando(false);
     }
   };
@@ -144,11 +153,14 @@ const ProveedorProductos = ({ children }) => {
       if (resp.error) throw resp.error;
 
       await cargarCatalogo();
+      notificar("Producto actualizado", "success");
       setProductoEditando(null);
     } catch (e) {
       const msg = e && e.message ? e.message : "Error al actualizar el producto";
       setError(msg);
-    } finally {
+
+      notificar(msg, "error");
+} finally {
       setCargando(false);
     }
   };

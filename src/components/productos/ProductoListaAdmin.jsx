@@ -7,17 +7,18 @@ import "./ProductoListaAdmin.css";
   Lista de productos con botones para editar y borrar.
 */
 const ProductoListaAdmin = () => {
-  const { catalogo, seleccionarProducto, borrarProducto, cargando } = useProductos();
+  const { catalogo, seleccionarProducto, borrarProducto, cargando } =
+    useProductos();
 
   const productos = catalogo ? catalogo : [];
 
   const pedirBorrado = async (p) => {
-    if (!p) return;
-
-    const ok = window.confirm("¿Seguro que quieres borrar este producto?");
-    if (!ok) return;
-
-    await borrarProducto(p.id);
+    if (p) {
+      const ok = window.confirm("¿Seguro que quieres borrar este producto?");
+      if (ok) {
+        await borrarProducto(p.id);
+      }
+    }
   };
 
   return (
@@ -39,7 +40,7 @@ const ProductoListaAdmin = () => {
 
             <div className="productoFilaAcciones">
               <button
-                className="boton botonMini"
+                className="btn btn--secondary btn--sm"
                 type="button"
                 onClick={() => seleccionarProducto(p)}
                 disabled={cargando}
@@ -48,7 +49,7 @@ const ProductoListaAdmin = () => {
               </button>
 
               <button
-                className="boton botonMini botonPeligro"
+                className="btn btn--danger btn--icon"
                 type="button"
                 onClick={() => pedirBorrado(p)}
                 disabled={cargando}

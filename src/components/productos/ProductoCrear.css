@@ -1,17 +1,36 @@
-.productoCrear {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.productoCrear{
+  display: grid;
+  gap: 16px;
 }
 
-.productoCrearFila {
+.productoCrear > label,
+.productoCrearFila > label{
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.productoCrear > label :is(.input),
+.productoCrearFila > label :is(.input){
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.productoCrearFila{
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 12px;
 }
 
-@media (max-width: 820px) {
-  .productoCrearFila {
-    grid-template-columns: 1fr;
-  }
+@media (max-width: 820px){
+  .productoCrearFila{ grid-template-columns: 1fr; }
+}
+
+.productoCrear button{
+  justify-self: flex-end;
 }

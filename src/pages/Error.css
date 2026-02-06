@@ -1,22 +1,19 @@
-.errorPage {
-  display: grid;
-  gap: var(--space-4);
-  padding: var(--space-5);
-  border-radius: var(--radius-lg);
-  background: rgba(255, 255, 255, 0.68);
-  border: 1px solid var(--surface-border);
+.errorPage{
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
   box-shadow: var(--shadow-1);
-  max-width: 720px;
+  padding: 18px;
+  display:grid;
+  gap: 10px;
 }
 
-.errorPage h2 {
+.errorPage h2{
   margin: 0;
-  font-size: 22px;
-  font-weight: 950;
-  letter-spacing: -0.6px;
+  letter-spacing: -0.25px;
 }
 
-.errorPage p {
+.errorPage p{
   margin: 0;
   color: var(--muted);
 }

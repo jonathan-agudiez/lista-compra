@@ -1,9 +1,12 @@
 import { createContext, useEffect, useState } from "react";
 import { supabase } from "../supabase/supabaseClient.js";
+import useNotificacion from "../hooks/useNotificacion.js";
 
 export const SesionContext = createContext(null);
 
 const ProveedorSesion = ({ children }) => {
+  const { notificar } = useNotificacion();
+
   const [cargando, setCargando] = useState(true);
   const [session, setSession] = useState(null);
   const [error, setError] = useState("");
@@ -39,6 +42,7 @@ const ProveedorSesion = ({ children }) => {
         if (activo) {
           const msg = e && e.message ? e.message : "Error al cargar la sesión";
           setError(msg);
+          notificar(msg, "error");
         }
       } finally {
         if (activo) setCargando(false);
@@ -60,7 +64,6 @@ const ProveedorSesion = ({ children }) => {
     return () => {
       activo = false;
 
-      // Cancelar suscripción (según lo que devuelva Supabase)
       if (
         respuestaSub &&
         respuestaSub.data &&
@@ -70,7 +73,7 @@ const ProveedorSesion = ({ children }) => {
         respuestaSub.data.subscription.unsubscribe();
       }
     };
-  }, []);
+  }, [notificar]);
 
   const signUp = async ({ email, password, fullName }) => {
     try {
@@ -89,9 +92,12 @@ const ProveedorSesion = ({ children }) => {
 
       const errorSupabase = respuesta.error;
       if (errorSupabase) throw errorSupabase;
+
+      notificar("Cuenta creada. Si hace falta, revisa el correo para confirmar.", "warning");
     } catch (e) {
       const msg = e && e.message ? e.message : "Error en el registro";
       setError(msg);
+      notificar(msg, "error");
     } finally {
       setCargando(false);
     }
@@ -109,9 +115,12 @@ const ProveedorSesion = ({ children }) => {
 
       const errorSupabase = respuesta.error;
       if (errorSupabase) throw errorSupabase;
+
+      notificar("Sesión iniciada correctamente.", "success");
     } catch (e) {
       const msg = e && e.message ? e.message : "Error al iniciar sesión";
       setError(msg);
+      notificar(msg, "error");
     } finally {
       setCargando(false);
     }
@@ -126,9 +135,12 @@ const ProveedorSesion = ({ children }) => {
       const errorSupabase = respuesta.error;
 
       if (errorSupabase) throw errorSupabase;
+
+      notificar("Sesión cerrada.", "warning");
     } catch (e) {
       const msg = e && e.message ? e.message : "Error al cerrar sesión";
       setError(msg);
+      notificar(msg, "error");
     } finally {
       setCargando(false);
     }

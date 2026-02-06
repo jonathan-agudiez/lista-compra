@@ -1,26 +1,33 @@
-.panelDetalle {
-  display: grid;
-  gap: var(--space-4);
+.panelDetalle{
+  display:grid;
+  gap: 14px;
 }
 
-.bloqueForm {
-  display: grid;
-  gap: var(--space-3);
+.bloqueForm{
+  display:grid;
+  gap: 10px;
 }
 
-.bloqueTitle {
-  font-weight: 800;
-  letter-spacing: -0.2px;
-}
-
-.panelDetalleNota {
+.bloqueForm label{
+  display:grid;
+  gap: 8px;
   font-size: 12px;
-  color: var(--muted-2);
+  font-weight: 700;
+  color: var(--muted);
 }
 
-.errorBox {
-  border: 1px solid rgba(217, 45, 32, 0.35);
-  background: rgba(217, 45, 32, 0.08);
-  padding: 12px;
-  border-radius: var(--radius);
+.bloqueTitle{
+  font-size: 13px;
+  font-weight: 750;
+  color: var(--text);
+  letter-spacing: -0.1px;
+}
+
+.panelDetalleNota{
+  color: var(--muted);
+  font-size: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  background: #fbfbfa;
+  border-radius: 14px;
 }

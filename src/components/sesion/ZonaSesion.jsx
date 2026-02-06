@@ -26,7 +26,7 @@ const ZonaSesion = () => {
             </div>
           </div>
 
-          <button className="boton" onClick={signOut} disabled={cargando}>
+          <button className="btn btn--secondary btn--sm" onClick={signOut} disabled={cargando}>
             Cerrar sesión
           </button>
         </>
@@ -38,7 +38,7 @@ const ZonaSesion = () => {
           </div>
 
           <Link className="botonLink" to="/acceso">
-            <button className="boton">Iniciar sesión</button>
+            <button className="btn btn--secondary">Iniciar sesión</button>
           </Link>
         </>
       )}

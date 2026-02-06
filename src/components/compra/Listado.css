@@ -1,113 +1,155 @@
-.lista {
+.lista{
   display: grid;
-  gap: var(--space-3);
+  gap: 12px;
 }
 
-.listaMeta {
+.listaMeta{
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-2);
+  gap: 10px;
   flex-wrap: wrap;
-  color: var(--muted-2);
+  color: var(--muted);
   font-size: 12px;
+  font-weight: 700;
 }
 
-.item {
+.itemEmpty{
+  padding: 14px 12px;
+  border-radius: var(--radius-md);
+  border: 1px dashed rgba(100,116,139,.35);
+  color: var(--muted);
+  background: rgba(241,245,249,.6);
+  font-weight: 600;
+}
+
+.item{
+  display: grid;
+  grid-template-columns: 1.3fr .7fr .7fr .7fr 52px;
+  gap: 12px;
+  align-items: center;
+
+  padding: 12px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  background: rgba(255, 255, 255, 0.78);
-  border: 1px solid rgba(11, 18, 32, 0.10);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.65) inset;
-  padding: var(--space-4);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
+  box-shadow: var(--shadow-sm);
 }
 
+.item:hover{
+  border-color: rgba(56,97,251,.25);
+  box-shadow: 0 10px 26px rgba(15,23,42,.06);
+}
 
-.itemLeft {
+.itemLeft{
   display: flex;
-  gap: var(--space-4);
   align-items: center;
+  gap: 12px;
   min-width: 0;
 }
 
-.itemImg {
-  width: 120px;
-  height: 120px;
-  border-radius: var(--radius);
+.itemImg{
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
   object-fit: cover;
-  border: 1px solid rgba(11, 18, 32, 0.10);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
 }
 
-.itemTitulo {
-  font-weight: 850;
-  letter-spacing: -0.3px;
+.itemInfo{ min-width:0; }
+
+.itemTitulo{
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  font-size: 14px;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-.itemDetalles {
-  font-size: 12px;
-  color: var(--muted-2);
+.itemDetalles{
   display: flex;
-  gap: var(--space-3);
+  gap: 10px;
   flex-wrap: wrap;
   margin-top: 4px;
-}
-
-.itemEmpty {
   color: var(--muted);
-  background: rgba(255, 255, 255, 0.55);
-  border: 1px dashed rgba(255, 255, 255, 0.28);
-  border-radius: var(--radius-lg);
-  padding: var(--space-4);
+  font-weight: 600;
+  font-size: 12px;
 }
 
-@media (max-width: 720px) {
-  .item {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .itemImg {
-    width: 100%;
-    height: 160px;
-  }
-}
-
-
-/* --- 6.10: extras de cantidad y totales --- */
-.itemCantidad {
-  margin-top: 6px;
-}
-
-.itemCantidadInput {
-  margin-top: 6px;
-  max-width: 140px;
-}
-
-.listaTotales {
-  margin-top: 14px;
-  padding: 12px;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.listaTotalesFila {
+.itemCantidad{
   display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
 }
 
-.listaAviso {
-  margin-top: 10px;
+.itemCantidadInput{
+  width: 92px;
+  height: 36px;
+  padding: 0 12px;
+  font-weight: 800;
+}
+
+
+.itemCol{
+  display: grid;
+  gap: 6px;
+}
+
+.itemColLabel{
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.itemColValue{
+  font-weight: 900;
+  font-size: 14px;
+}
+
+.listaTotales{
+  margin-top: 4px;
+  padding: 14px 14px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: rgba(241,245,249,.65);
+  display: grid;
+  gap: 10px;
+}
+
+.listaTotalesFila{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-weight: 800;
+}
+
+.avisoCoche{
   padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(217, 45, 32, 0.18);
-  color: rgba(255, 255, 255, 0.92);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(225,29,72,.25);
+  background: rgba(225,29,72,.08);
+  color: var(--danger);
+  font-weight: 800;
+}
+
+@media (max-width: 920px){
+  .item{
+    grid-template-columns: 1fr 1fr 52px;
+    grid-template-areas:
+      "left left action"
+      "peso precio action"
+      "cantidad cantidad action";
+  }
+
+  .itemLeft{ grid-area: left; }
+  .itemCol--peso{ grid-area: peso; }
+  .itemCol--precio{ grid-area: precio; }
+  .itemCantidad{ grid-area: cantidad; }
+  .itemAction{ grid-area: action; justify-self: end; }
 }
