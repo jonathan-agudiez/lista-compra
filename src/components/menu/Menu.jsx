@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import "./menu.css";
+import Logo from "../assets/logo-MollaMarket.svg";
 
 const Menu = () => {
   const location = useLocation();
@@ -7,7 +8,15 @@ const Menu = () => {
   return (
     <nav className="menu">
       <div className="menuFila">
-        <div className="menuTitulo">Lista de la compra</div>
+        <div className="menuBrand">
+          <Link to="/">
+            <img
+              src={Logo}
+              alt="Molla Market"
+              className="menuLogo"
+            />
+          </Link>
+        </div>
 
         <div className="menuLinks">
           <Link
@@ -20,7 +29,9 @@ const Menu = () => {
           <Link
             to="/compra"
             className={
-              location.pathname.startsWith("/compra") ? "navlink active" : "navlink"
+              location.pathname.startsWith("/compra")
+                ? "navlink active"
+                : "navlink"
             }
           >
             App
@@ -29,7 +40,9 @@ const Menu = () => {
           <Link
             to="/productos"
             className={
-              location.pathname.startsWith("/productos") ? "navlink active" : "navlink"
+              location.pathname.startsWith("/productos")
+                ? "navlink active"
+                : "navlink"
             }
           >
             Productos

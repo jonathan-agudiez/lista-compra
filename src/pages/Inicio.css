@@ -3,6 +3,7 @@
   gap: 18px;
 }
 
+/* HERO */
 .inicioHero{
   background: var(--surface);
   border: 1px solid var(--border);
@@ -17,33 +18,209 @@
   content:"";
   position:absolute;
   inset: -1px;
-  background: radial-gradient(1200px 260px at 10% 0%, rgba(56,97,251,.12), transparent 55%),
-              radial-gradient(900px 240px at 90% 20%, rgba(56,97,251,.10), transparent 60%);
   pointer-events:none;
 }
 
 .inicioHero > *{ position: relative; }
 
-.inicioHero h2{
+.inicioBadge{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.04);
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.inicioTitulo{
   margin: 0 0 8px;
-  font-size: 32px;
-  line-height: 1.15;
+  font-size: 34px;
+  line-height: 1.1;
   letter-spacing: -0.03em;
+  font-weight: 850;
+  padding-bottom: 10px;
+}
+
+.textoSuave{
+  color: var(--muted);
   font-weight: 800;
 }
 
-.inicioHero p{
+.inicioSubtitulo{
   margin: 0 0 16px;
   color: var(--muted);
   font-weight: 400;
+  max-width: 66ch;
 }
 
+/* CTAs */
 .inicioCtas{
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .inicioCtas .navlink{
   border-radius: 14px;
+}
+
+.navlink.secundario{
+  background: transparent;
+  border: 1px solid var(--border);
+  color: inherit;
+}
+
+.navlink.secundario:hover{
+  filter: brightness(1.05);
+}
+
+/* Mini info chips */
+.inicioMiniInfo{
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.inicioMiniInfo span{
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.03);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* BLOQUES (cards) */
+.inicioBloques{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.inicioCard{
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 16px;
+}
+
+.inicioCard h3{
+  margin: 0 0 6px;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+}
+
+.inicioCard p{
+  margin: 0;
+  color: var(--muted);
+}
+
+/* COMO FUNCIONA */
+.inicioComoFunciona{
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 18px;
+}
+
+.inicioSeccionTitulo{
+  margin: 0 0 12px;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+}
+
+.inicioPasos{
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+
+.inicioPasos li{
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 10px;
+  align-items: start;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.02);
+}
+
+.pasoNum{
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+}
+
+.inicioPasos strong{
+  display: block;
+  margin-bottom: 2px;
+}
+
+.inicioPasos p{
+  margin: 0;
+  color: var(--muted);
+}
+
+/* HR suave (por si no existe en global) */
+.hrSuave{
+  border: none;
+  height: 1px;
+  background: var(--border);
+  opacity: .7;
+}
+
+/* FINAL */
+.inicioFinal{
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 18px;
+  text-align: center;
+}
+
+.inicioFinal h3{
+  margin: 0 0 6px;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+}
+
+.inicioFinal p{
+  margin: 0 0 14px;
+  color: var(--muted);
+}
+
+.inicioNota{
+  margin-top: 10px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+/* Responsive */
+@media (max-width: 860px){
+  .inicioBloques{
+    grid-template-columns: 1fr;
+  }
+  .inicioTitulo{
+    font-size: 30px;
+  }
 }
