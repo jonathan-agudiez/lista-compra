@@ -1,6 +1,6 @@
 import PanelListado from "../components/compra/PanelListado.jsx";
 import ProductosListado from "../components/compra/ProductosListado.jsx";
-import useSesion from "../hooks/useSesion.js";
+import { useSesion } from "../hooks/useSesion.js";
 import { Navigate } from "react-router-dom";
 import "./Compra.css";
 

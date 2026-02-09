@@ -1,5 +1,3 @@
-import { BrowserRouter } from "react-router-dom";
-
 import ContenedorGeneral from "./components/layout/ContenedorGeneral.jsx";
 import Cabecera from "./components/layout/Cabecera.jsx";
 import ContenidoPrincipal from "./components/layout/ContenidoPrincipal.jsx";
@@ -7,33 +5,24 @@ import Footer from "./components/footer/Footer.jsx";
 
 import CabeceraFila from "./components/layout/CabeceraFila.jsx";
 
-import ProveedorSesion from "./context/ProveedorSesion.jsx";
-import ProveedorNotificacion from "./context/NotificacionContext.jsx";
 import Notificacion from "./components/ui/Notificacion.jsx";
 
-import Rutas from "./routes/Rutas.jsx";
-
+import { Rutas } from "./routes/Rutas.jsx";
 function App() {
   return (
-    <BrowserRouter>
-      <ProveedorNotificacion>
-        <ProveedorSesion>
-          <ContenedorGeneral>
-            <Notificacion />
+    <ContenedorGeneral>
+      <Notificacion />
 
-            <Cabecera>
-              <CabeceraFila />
-            </Cabecera>
+      <Cabecera>
+        <CabeceraFila />
+      </Cabecera>
 
-            <ContenidoPrincipal>
-              <Rutas />
-            </ContenidoPrincipal>
+      <ContenidoPrincipal>
+        <Rutas />
+      </ContenidoPrincipal>
 
-            <Footer />
-          </ContenedorGeneral>
-        </ProveedorSesion>
-      </ProveedorNotificacion>
-    </BrowserRouter>
+      <Footer />
+    </ContenedorGeneral>
   );
 }
 

@@ -1,9 +1,9 @@
 import { createContext, useEffect, useState } from "react";
 import { supabase } from "../supabase/supabaseClient.js";
-import useSesion from "../hooks/useSesion.js";
-import useNotificacion from "../hooks/useNotificacion.js";
+import { useSesion } from "../hooks/useSesion.js";
+import { useNotificacion } from "../hooks/useNotificacion.js";
 
-export const CompraContext = createContext(null);
+const CompraContext = createContext(null);
 
 /*
   Contexto de compra:
@@ -32,10 +32,14 @@ const ProveedorCompra = ({ children }) => {
   const umbralCoche = 15000;
 
   const formatearFecha = (iso) => {
-    if (!iso) return "";
+    if (!iso) {
+      return "";
+    }
 
     const fecha = new Date(iso);
-    if (Number.isNaN(fecha.getTime())) return "";
+    if (Number.isNaN(fecha.getTime())) {
+      return "";
+    }
 
     const d = String(fecha.getDate()).padStart(2, "0");
     const m = String(fecha.getMonth() + 1).padStart(2, "0");
@@ -61,7 +65,10 @@ const ProveedorCompra = ({ children }) => {
 
         if (errorSupabase) throw errorSupabase;
 
-        const listasCargadas = data ? data : [];
+        let listasCargadas = [];
+        if (data) {
+          listasCargadas = data;
+        }
         setListas(listasCargadas);
 
         // Si la lista activa no existe, se selecciona la primera
@@ -76,16 +83,22 @@ const ProveedorCompra = ({ children }) => {
         }
 
         if (!nuevaActiva) {
-          nuevaActiva = listasCargadas.length > 0 ? listasCargadas[0] : null;
+          if (listasCargadas.length > 0) {
+            nuevaActiva = listasCargadas[0];
+          }
         }
 
         setListaActiva(nuevaActiva);
       } catch (e) {
-        const msg = e && e.message ? e.message : "Error al cargar las listas";
+        let msg = "Error al cargar las listas";
+        if (e) {
+          if (e.message) {
+            msg = e.message;
+          }
+        }
         setError(msg);
-
         notificar(msg, "error");
-} finally {
+      } finally {
         setCargando(false);
       }
     }
@@ -106,13 +119,21 @@ const ProveedorCompra = ({ children }) => {
 
       if (errorSupabase) throw errorSupabase;
 
-      setCatalogo(data ? data : []);
+      let catalogoCargado = [];
+      if (data) {
+        catalogoCargado = data;
+      }
+      setCatalogo(catalogoCargado);
     } catch (e) {
-      const msg = e && e.message ? e.message : "Error al cargar el catálogo";
+      let msg = "Error al cargar el catálogo";
+      if (e) {
+        if (e.message) {
+          msg = e.message;
+        }
+      }
       setError(msg);
-
       notificar(msg, "error");
-} finally {
+    } finally {
       setCargando(false);
     }
   };
@@ -149,22 +170,41 @@ const ProveedorCompra = ({ children }) => {
 
         if (errorSupabase) throw errorSupabase;
 
-        const normalizados = (data ? data : []).map((row) => {
+        let filas = [];
+        if (data) {
+          filas = data;
+        }
+
+        const normalizados = filas.map((row) => {
+          let cantidad = 1;
+          if (row.quantity != null) {
+            cantidad = row.quantity;
+          }
+
+          let producto = null;
+          if (row.products) {
+            producto = row.products;
+          }
+
           return {
             list_id: row.list_id,
             product_id: row.product_id,
-            quantity: row.quantity != null ? row.quantity : 1,
-            product: row.products ? row.products : null,
+            quantity: cantidad,
+            product: producto,
           };
         });
 
         setItems(normalizados);
       } catch (e) {
-        const msg = e && e.message ? e.message : "Error al cargar los productos de la lista";
+        let msg = "Error al cargar los productos de la lista";
+        if (e) {
+          if (e.message) {
+            msg = e.message;
+          }
+        }
         setError(msg);
-
         notificar(msg, "error");
-} finally {
+      } finally {
         setCargando(false);
       }
     }
@@ -188,14 +228,23 @@ const ProveedorCompra = ({ children }) => {
         if (errorSupabase) throw errorSupabase;
 
         await cargarListas();
-        setListaActiva(data ? data : null);
-      notificar("Lista creada", "success");
+        if (data) {
+          setListaActiva(data);
+        } else {
+          setListaActiva(null);
+        }
+        notificar("Lista creada", "success");
       } catch (e) {
-        const msg = e && e.message ? e.message : "Error al crear la lista";
+        let msg = "Error al crear la lista";
+        if (e) {
+          if (e.message) {
+            msg = e.message;
+          }
+        }
         setError(msg);
 
         notificar(msg, "error");
-} finally {
+      } finally {
         setCargando(false);
       }
     }
@@ -216,13 +265,18 @@ const ProveedorCompra = ({ children }) => {
         if (errorSupabase) throw errorSupabase;
 
         await cargarListas();
-      notificar("Lista eliminada", "success");
+        notificar("Lista eliminada", "success");
       } catch (e) {
-        const msg = e && e.message ? e.message : "Error al borrar la lista";
+        let msg = "Error al borrar la lista";
+        if (e) {
+          if (e.message) {
+            msg = e.message;
+          }
+        }
         setError(msg);
 
         notificar(msg, "error");
-} finally {
+      } finally {
         setCargando(false);
       }
     }
@@ -248,7 +302,10 @@ const ProveedorCompra = ({ children }) => {
         if (existe.error) throw existe.error;
 
         if (existe.data) {
-          const anterior = existe.data.quantity != null ? Number(existe.data.quantity) : 1;
+          let anterior = 1;
+          if (existe.data.quantity != null) {
+            anterior = Number(existe.data.quantity);
+          }
           const nuevaCantidad = anterior + cantidad;
 
           const upd = await supabase
@@ -267,13 +324,19 @@ const ProveedorCompra = ({ children }) => {
         }
 
         await cargarItems(list_id);
-      notificar("Producto añadido", "success");
+
+        // No se notifica en éxito para evitar renders innecesarios.
       } catch (e) {
-        const msg = e && e.message ? e.message : "Error al añadir el producto a la lista";
+        let msg = "Error al añadir el producto a la lista";
+        if (e) {
+          if (e.message) {
+            msg = e.message;
+          }
+        }
         setError(msg);
 
         notificar(msg, "error");
-} finally {
+      } finally {
         setCargando(false);
       }
     }
@@ -299,11 +362,16 @@ const ProveedorCompra = ({ children }) => {
 
         await cargarItems(list_id);
       } catch (e) {
-        const msg = e && e.message ? e.message : "Error al cambiar la cantidad";
+        let msg = "Error al cambiar la cantidad";
+        if (e) {
+          if (e.message) {
+            msg = e.message;
+          }
+        }
         setError(msg);
 
         notificar(msg, "error");
-} finally {
+      } finally {
         setCargando(false);
       }
     }
@@ -325,13 +393,18 @@ const ProveedorCompra = ({ children }) => {
         if (errorSupabase) throw errorSupabase;
 
         await cargarItems(list_id);
-      notificar("Producto quitado", "success");
+        notificar("Producto quitado", "success");
       } catch (e) {
-        const msg = e && e.message ? e.message : "Error al quitar el producto";
+        let msg = "Error al quitar el producto";
+        if (e) {
+          if (e.message) {
+            msg = e.message;
+          }
+        }
         setError(msg);
 
         notificar(msg, "error");
-} finally {
+      } finally {
         setCargando(false);
       }
     }
@@ -344,7 +417,10 @@ const ProveedorCompra = ({ children }) => {
 
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
-      const q = item.quantity != null ? Number(item.quantity) : 1;
+      let q = 1;
+      if (item.quantity != null) {
+        q = Number(item.quantity);
+      }
 
       if (item.product && item.product.weight != null) {
         peso += Number(item.product.weight) * q;
@@ -371,14 +447,19 @@ const ProveedorCompra = ({ children }) => {
       cargarCatalogo();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user ? user.id : null]);
+  }, [user]);
 
   // Cuando cambia la lista activa, se recargan items
   useEffect(() => {
-    const id = listaActiva && listaActiva.id ? listaActiva.id : null;
+    let id = null;
+    if (listaActiva) {
+      if (listaActiva.id) {
+        id = listaActiva.id;
+      }
+    }
     cargarItems(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [listaActiva ? listaActiva.id : null]);
+  }, [listaActiva]);
 
   const value = {
     cargando,
@@ -406,4 +487,4 @@ const ProveedorCompra = ({ children }) => {
   return <CompraContext.Provider value={value}>{children}</CompraContext.Provider>;
 };
 
-export default ProveedorCompra;
+export { CompraContext, ProveedorCompra };

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import useProductos from "../../hooks/useProductos.js";
+import { useProductos } from "../../hooks/useProductos.js";
 import "./FiltroProductos.css";
 
 /*
@@ -15,7 +15,7 @@ const FiltroProductos = () => {
     filtrarPorPrecioMax,
     filtrarPorPesoMax,
     limpiarFiltro,
-    setOrdenarPor,
+    cambiarOrden,
   } = useProductos();
 
   const [textoNombre, setTextoNombre] = useState("");
@@ -107,7 +107,7 @@ const FiltroProductos = () => {
           <select
             className="input"
             value={ordenarPor}
-            onChange={(e) => setOrdenarPor(e.target.value)}
+            onChange={(e) => cambiarOrden(e.target.value)}
             disabled={cargando}
           >
             <option value="name">Nombre</option>

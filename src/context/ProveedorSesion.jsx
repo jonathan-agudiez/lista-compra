@@ -1,20 +1,30 @@
 import { createContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabase/supabaseClient.js";
-import useNotificacion from "../hooks/useNotificacion.js";
+import { useNotificacion } from "../hooks/useNotificacion.js";
 
-export const SesionContext = createContext(null);
+const SesionContext = createContext(null);
 
-const ProveedorSesion = ({ children }) => {
+/*
+  Contexto de sesión:
+  - carga la sesión al arrancar
+  - escucha cambios de autenticación
+  - notifica errores por toast
+*/
+function ProveedorSesion({ children }) {
   const { notificar } = useNotificacion();
+  const navegar = useNavigate();
 
   const [cargando, setCargando] = useState(true);
   const [session, setSession] = useState(null);
+  const [sesionIniciada, setSesionIniciada] = useState(false);
   const [error, setError] = useState("");
 
-  // Usuario actual (si no hay sesión, es null)
   let user = null;
-  if (session && session.user) {
-    user = session.user;
+  if (session) {
+    if (session.user) {
+      user = session.user;
+    }
   }
 
   useEffect(() => {
@@ -34,13 +44,18 @@ const ProveedorSesion = ({ children }) => {
         if (activo) {
           if (data && data.session) {
             setSession(data.session);
+            setSesionIniciada(true);
           } else {
             setSession(null);
+            setSesionIniciada(false);
           }
         }
       } catch (e) {
         if (activo) {
-          const msg = e && e.message ? e.message : "Error al cargar la sesión";
+          let msg = "Error al cargar la sesión";
+          if (e) {
+            if (e.message) msg = e.message;
+          }
           setError(msg);
           notificar(msg, "error");
         }
@@ -51,12 +66,24 @@ const ProveedorSesion = ({ children }) => {
 
     cargarSesion();
 
-    const respuestaSub = supabase.auth.onAuthStateChange(function (_event, sesionNueva) {
-      if (activo) {
-        if (sesionNueva) {
-          setSession(sesionNueva);
-        } else {
-          setSession(null);
+    const respuestaSub = supabase.auth.onAuthStateChange(function (event, sesionNueva) {
+      if (!activo) return;
+
+      if (sesionNueva) {
+        setSession(sesionNueva);
+        setSesionIniciada(true);
+
+        // Al iniciar sesión se vuelve a inicio.
+        if (event === "SIGNED_IN") {
+          navegar("/");
+        }
+      } else {
+        setSession(null);
+        setSesionIniciada(false);
+
+        // Al cerrar sesión se vuelve al acceso.
+        if (event === "SIGNED_OUT") {
+          navegar("/acceso");
         }
       }
     });
@@ -73,7 +100,7 @@ const ProveedorSesion = ({ children }) => {
         respuestaSub.data.subscription.unsubscribe();
       }
     };
-  }, [notificar]);
+  }, [notificar, navegar]);
 
   const signUp = async ({ email, password, fullName }) => {
     try {
@@ -93,9 +120,12 @@ const ProveedorSesion = ({ children }) => {
       const errorSupabase = respuesta.error;
       if (errorSupabase) throw errorSupabase;
 
-      notificar("Cuenta creada. Si hace falta, revisa el correo para confirmar.", "warning");
+      notificar("Cuenta creada. Si hace falta, revisar el correo para confirmar.", "warning");
     } catch (e) {
-      const msg = e && e.message ? e.message : "Error en el registro";
+      let msg = "Error en el registro";
+      if (e) {
+        if (e.message) msg = e.message;
+      }
       setError(msg);
       notificar(msg, "error");
     } finally {
@@ -118,7 +148,10 @@ const ProveedorSesion = ({ children }) => {
 
       notificar("Sesión iniciada correctamente.", "success");
     } catch (e) {
-      const msg = e && e.message ? e.message : "Error al iniciar sesión";
+      let msg = "Error al iniciar sesión";
+      if (e) {
+        if (e.message) msg = e.message;
+      }
       setError(msg);
       notificar(msg, "error");
     } finally {
@@ -138,7 +171,10 @@ const ProveedorSesion = ({ children }) => {
 
       notificar("Sesión cerrada.", "warning");
     } catch (e) {
-      const msg = e && e.message ? e.message : "Error al cerrar sesión";
+      let msg = "Error al cerrar sesión";
+      if (e) {
+        if (e.message) msg = e.message;
+      }
       setError(msg);
       notificar(msg, "error");
     } finally {
@@ -149,17 +185,16 @@ const ProveedorSesion = ({ children }) => {
   const value = {
     cargando,
     session,
+    sesionIniciada,
     user,
     error,
+    setError,
     signUp,
     signIn,
     signOut,
-    setError,
   };
 
-  return (
-    <SesionContext.Provider value={value}>{children}</SesionContext.Provider>
-  );
-};
+  return <SesionContext.Provider value={value}>{children}</SesionContext.Provider>;
+}
 
-export default ProveedorSesion;
+export { SesionContext, ProveedorSesion };

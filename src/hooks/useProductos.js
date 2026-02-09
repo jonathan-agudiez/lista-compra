@@ -1,17 +1,12 @@
 import { useContext } from "react";
 import { ProductosContext } from "../context/ProveedorProductos.jsx";
 
-/*
-  Hook para usar el contexto de productos.
-*/
-const useProductos = () => {
-  const contexto = useContext(ProductosContext);
-
-  if (contexto === null) {
-    throw new Error("useProductos debe usarse dentro de ProveedorProductos");
+function useProductos() {
+  const ctx = useContext(ProductosContext);
+  if (!ctx) {
+    throw new Error("useProductos debe usarse dentro de <ProveedorProductos>.");
   }
+  return ctx;
+}
 
-  return contexto;
-};
-
-export default useProductos;
+export { useProductos };

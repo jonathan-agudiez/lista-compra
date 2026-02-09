@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import useSesion from "../hooks/useSesion.js";
+import { useSesion } from "../hooks/useSesion.js";
 import FormularioAcceso from "../components/sesion/FormularioAcceso.jsx";
 import "./Acceso.css";
 

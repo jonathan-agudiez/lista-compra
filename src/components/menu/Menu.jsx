@@ -1,52 +1,36 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import "./menu.css";
 import Logo from "../assets/logo-MollaMarket.svg";
 
 const Menu = () => {
-  const location = useLocation();
+  const claseActiva = ({ isActive }) => {
+    if (isActive) {
+      return "navlink active";
+    }
+    return "navlink";
+  };
 
   return (
     <nav className="menu">
       <div className="menuFila">
         <div className="menuBrand">
           <Link to="/">
-            <img
-              src={Logo}
-              alt="Molla Market"
-              className="menuLogo"
-            />
+            <img src={Logo} alt="Molla Market" className="menuLogo" />
           </Link>
         </div>
 
         <div className="menuLinks">
-          <Link
-            to="/"
-            className={location.pathname === "/" ? "navlink active" : "navlink"}
-          >
+          <NavLink to="/" className={claseActiva}>
             Inicio
-          </Link>
+          </NavLink>
 
-          <Link
-            to="/compra"
-            className={
-              location.pathname.startsWith("/compra")
-                ? "navlink active"
-                : "navlink"
-            }
-          >
+          <NavLink to="/compra" className={claseActiva} end={false}>
             App
-          </Link>
+          </NavLink>
 
-          <Link
-            to="/productos"
-            className={
-              location.pathname.startsWith("/productos")
-                ? "navlink active"
-                : "navlink"
-            }
-          >
+          <NavLink to="/productos" className={claseActiva} end={false}>
             Productos
-          </Link>
+          </NavLink>
         </div>
       </div>
     </nav>

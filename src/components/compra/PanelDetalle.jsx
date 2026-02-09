@@ -1,6 +1,6 @@
 import { useState } from "react";
-import useCompra from "../../hooks/useCompra.js";
-import useNotificacion from "../../hooks/useNotificacion.js";
+import { useCompra } from "../../hooks/useCompra.js";
+import { useNotificacion } from "../../hooks/useNotificacion.js";
 import "./panel.css";
 import "./PanelDetalle.css";
 
@@ -58,7 +58,10 @@ const PanelDetalle = () => {
     }
   };
 
-  const catalogoSeguro = catalogo ? catalogo : [];
+  let catalogoSeguro = [];
+  if (catalogo) {
+    catalogoSeguro = catalogo;
+  }
 
   const opcionesCatalogo = catalogoSeguro.map((p) => {
     return {
@@ -67,8 +70,12 @@ const PanelDetalle = () => {
     };
   });
 
-  const nombreListaActiva =
-    listaActiva && listaActiva.name ? listaActiva.name : "(ninguna)";
+  let nombreListaActiva = "(ninguna)";
+  if (listaActiva) {
+    if (listaActiva.name) {
+      nombreListaActiva = listaActiva.name;
+    }
+  }
 
   return (
     <section className="panel">
