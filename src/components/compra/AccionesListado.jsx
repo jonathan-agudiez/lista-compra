@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useCompra } from "../../hooks/useCompra.js";
+import useCompra from "../../hooks/useCompra.js";
 import "./AccionesListado.css";
 
 /*
   Acciones sobre el listado.
-  - Nueva lista: muestra un input inline
+  - Nueva lista: muestra un input inline (sin prompt)
   - Recargar: vuelve a cargar listas + catálogo
   - Borrar lista: confirmación inline (sin window.confirm)
 */
@@ -44,12 +44,7 @@ const AccionesListado = () => {
   );
 
   const abrirCrear = () => {
-    setModo((m) => {
-      if (m === "create") {
-        return "none";
-      }
-      return "create";
-    });
+    setModo((m) => (m === "create" ? "none" : "create"));
   };
 
   const confirmarCrear = async () => {
@@ -68,12 +63,7 @@ const AccionesListado = () => {
 
   const pedirBorrado = () => {
     if (!listaActiva) return;
-    setModo((m) => {
-      if (m === "delete") {
-        return "none";
-      }
-      return "delete";
-    });
+    setModo((m) => (m === "delete" ? "none" : "delete"));
   };
 
   const confirmarBorrado = async () => {
@@ -90,83 +80,11 @@ const AccionesListado = () => {
 
   const abierto = modo !== "none";
 
-  let claseCrear = "btn btn--primary";
-  if (modo === "create") {
-    claseCrear = "btn btn--secondary";
-  }
-
-  let claseBorrar = "btn btn--secondary";
-  if (modo === "delete") {
-    claseBorrar = "btn btn--danger";
-  }
-
-  let claseSegundo = "accionesListadoSegundo";
-  if (abierto) {
-    claseSegundo = claseSegundo + " isOpen";
-  }
-
-  let segundoContenido = null;
-  if (modo === "create") {
-    segundoContenido = (
-      <>
-        <input
-          className="input accionesListadoInput"
-          value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
-          placeholder="Nombre del listado…"
-          disabled={cargando}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") confirmarCrear();
-            if (e.key === "Escape") cancelarSegundoPanel();
-          }}
-        />
-
-        <button
-          className="btn btn--primary btn--icon"
-          type="button"
-          onClick={confirmarCrear}
-          disabled={cargando || nombre.trim() === ""}
-          title="Confirmar"
-        >
-          <IconOk />
-        </button>
-      </>
-    );
-  }
-
-  if (modo === "delete") {
-    segundoContenido = (
-      <>
-        <div className="accionesListadoMensaje">¿Borrar la lista activa?</div>
-
-        <button
-          className="btn btn--danger btn--icon"
-          type="button"
-          onClick={confirmarBorrado}
-          disabled={cargando || !listaActiva}
-          title="Confirmar borrado"
-        >
-          <IconOk />
-        </button>
-
-        <button
-          className="btn btn--secondary btn--icon"
-          type="button"
-          onClick={cancelarSegundoPanel}
-          disabled={cargando}
-          title="Cancelar"
-        >
-          <IconX />
-        </button>
-      </>
-    );
-  }
-
   return (
     <div className="accionesListadoGrid">
       <div className="accionesListado">
         <button
-          className={claseCrear}
+          className={"btn " + (modo === "create" ? "btn--secondary" : "btn--primary")}
           type="button"
           onClick={abrirCrear}
           disabled={cargando}
@@ -186,7 +104,7 @@ const AccionesListado = () => {
         </button>
 
         <button
-          className={claseBorrar}
+          className={"btn " + (modo === "delete" ? "btn--danger" : "btn--secondary")}
           type="button"
           onClick={pedirBorrado}
           disabled={cargando || !listaActiva}
@@ -196,7 +114,57 @@ const AccionesListado = () => {
         </button>
       </div>
 
-      <div className={claseSegundo}>{segundoContenido}</div>
+      <div className={"accionesListadoSegundo " + (abierto ? "isOpen" : "")}>
+        {modo === "create" ? (
+          <>
+            <input
+              className="input accionesListadoInput"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+              placeholder="Nombre del listado…"
+              disabled={cargando}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") confirmarCrear();
+                if (e.key === "Escape") cancelarSegundoPanel();
+              }}
+            />
+
+            <button
+              className="btn btn--primary btn--icon"
+              type="button"
+              onClick={confirmarCrear}
+              disabled={cargando || nombre.trim() === ""}
+              title="Confirmar"
+            >
+              <IconOk />
+            </button>
+          </>
+        ) : modo === "delete" ? (
+          <>
+            <div className="accionesListadoMensaje">¿Borrar la lista activa?</div>
+
+            <button
+              className="btn btn--danger btn--icon"
+              type="button"
+              onClick={confirmarBorrado}
+              disabled={cargando || !listaActiva}
+              title="Confirmar borrado"
+            >
+              <IconOk />
+            </button>
+
+            <button
+              className="btn btn--secondary btn--icon"
+              type="button"
+              onClick={cancelarSegundoPanel}
+              disabled={cargando}
+              title="Cancelar"
+            >
+              <IconX />
+            </button>
+          </>
+        ) : null}
+      </div>
     </div>
   );
 };

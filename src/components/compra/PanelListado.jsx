@@ -1,6 +1,6 @@
 import AccionesListado from "./AccionesListado.jsx";
 import Listado from "./Listado.jsx";
-import { useCompra } from "../../hooks/useCompra.js";
+import useCompra from "../../hooks/useCompra.js";
 import "./panel.css";
 import "./PanelListado.css";
 

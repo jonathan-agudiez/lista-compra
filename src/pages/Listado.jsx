@@ -1,4 +1,4 @@
-import { useSesion } from "../hooks/useSesion.js";
+import useSesion from "../hooks/useSesion.js";
 import "./Listado.css";
 
 function Listado() {

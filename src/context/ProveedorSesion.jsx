@@ -1,30 +1,21 @@
 import { createContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "../supabase/supabaseClient.js";
-import { useNotificacion } from "../hooks/useNotificacion.js";
+import useNotificacion from "../hooks/useNotificacion.js";
+import useSupabaseSesion from "../hooks/useSupabaseSesion.js";
 
-const SesionContext = createContext(null);
+export const SesionContext = createContext(null);
 
-/*
-  Contexto de sesión:
-  - carga la sesión al arrancar
-  - escucha cambios de autenticación
-  - notifica errores por toast
-*/
-function ProveedorSesion({ children }) {
+const ProveedorSesion = ({ children }) => {
   const { notificar } = useNotificacion();
-  const navegar = useNavigate();
+  const supaSesion = useSupabaseSesion();
 
   const [cargando, setCargando] = useState(true);
   const [session, setSession] = useState(null);
-  const [sesionIniciada, setSesionIniciada] = useState(false);
   const [error, setError] = useState("");
 
+  // Usuario actual (si no hay sesión, es null)
   let user = null;
-  if (session) {
-    if (session.user) {
-      user = session.user;
-    }
+  if (session && session.user) {
+    user = session.user;
   }
 
   useEffect(() => {
@@ -35,27 +26,11 @@ function ProveedorSesion({ children }) {
         setCargando(true);
         setError("");
 
-        const respuesta = await supabase.auth.getSession();
-        const data = respuesta.data;
-        const errorSupabase = respuesta.error;
-
-        if (errorSupabase) throw errorSupabase;
-
-        if (activo) {
-          if (data && data.session) {
-            setSession(data.session);
-            setSesionIniciada(true);
-          } else {
-            setSession(null);
-            setSesionIniciada(false);
-          }
-        }
+        const sesionActual = await supaSesion.obtenerSesion();
+        if (activo) setSession(sesionActual);
       } catch (e) {
         if (activo) {
-          let msg = "Error al cargar la sesión";
-          if (e) {
-            if (e.message) msg = e.message;
-          }
+          const msg = e && e.message ? e.message : "Error al cargar la sesión";
           setError(msg);
           notificar(msg, "error");
         }
@@ -66,24 +41,12 @@ function ProveedorSesion({ children }) {
 
     cargarSesion();
 
-    const respuestaSub = supabase.auth.onAuthStateChange(function (event, sesionNueva) {
-      if (!activo) return;
-
-      if (sesionNueva) {
-        setSession(sesionNueva);
-        setSesionIniciada(true);
-
-        // Al iniciar sesión se vuelve a inicio.
-        if (event === "SIGNED_IN") {
-          navegar("/");
-        }
-      } else {
-        setSession(null);
-        setSesionIniciada(false);
-
-        // Al cerrar sesión se vuelve al acceso.
-        if (event === "SIGNED_OUT") {
-          navegar("/acceso");
+    const respuestaSub = supaSesion.suscribirseAuth(function (_event, sesionNueva) {
+      if (activo) {
+        if (sesionNueva) {
+          setSession(sesionNueva);
+        } else {
+          setSession(null);
         }
       }
     });
@@ -100,32 +63,18 @@ function ProveedorSesion({ children }) {
         respuestaSub.data.subscription.unsubscribe();
       }
     };
-  }, [notificar, navegar]);
+  }, [notificar]);
 
   const signUp = async ({ email, password, fullName }) => {
     try {
       setCargando(true);
       setError("");
 
-      const respuesta = await supabase.auth.signUp({
-        email: email,
-        password: password,
-        options: {
-          data: {
-            full_name: fullName,
-          },
-        },
-      });
+      await supaSesion.crearCuenta({ email: email, password: password, fullName: fullName });
 
-      const errorSupabase = respuesta.error;
-      if (errorSupabase) throw errorSupabase;
-
-      notificar("Cuenta creada. Si hace falta, revisar el correo para confirmar.", "warning");
+      notificar("Cuenta creada. Si hace falta, revisa el correo para confirmar.", "warning");
     } catch (e) {
-      let msg = "Error en el registro";
-      if (e) {
-        if (e.message) msg = e.message;
-      }
+      const msg = e && e.message ? e.message : "Error en el registro";
       setError(msg);
       notificar(msg, "error");
     } finally {
@@ -138,20 +87,11 @@ function ProveedorSesion({ children }) {
       setCargando(true);
       setError("");
 
-      const respuesta = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password,
-      });
-
-      const errorSupabase = respuesta.error;
-      if (errorSupabase) throw errorSupabase;
+      await supaSesion.iniciarSesion({ email: email, password: password });
 
       notificar("Sesión iniciada correctamente.", "success");
     } catch (e) {
-      let msg = "Error al iniciar sesión";
-      if (e) {
-        if (e.message) msg = e.message;
-      }
+      const msg = e && e.message ? e.message : "Error al iniciar sesión";
       setError(msg);
       notificar(msg, "error");
     } finally {
@@ -164,17 +104,11 @@ function ProveedorSesion({ children }) {
       setCargando(true);
       setError("");
 
-      const respuesta = await supabase.auth.signOut();
-      const errorSupabase = respuesta.error;
-
-      if (errorSupabase) throw errorSupabase;
+      await supaSesion.cerrarSesion();
 
       notificar("Sesión cerrada.", "warning");
     } catch (e) {
-      let msg = "Error al cerrar sesión";
-      if (e) {
-        if (e.message) msg = e.message;
-      }
+      const msg = e && e.message ? e.message : "Error al cerrar sesión";
       setError(msg);
       notificar(msg, "error");
     } finally {
@@ -185,16 +119,17 @@ function ProveedorSesion({ children }) {
   const value = {
     cargando,
     session,
-    sesionIniciada,
     user,
     error,
-    setError,
     signUp,
     signIn,
     signOut,
+    setError,
   };
 
-  return <SesionContext.Provider value={value}>{children}</SesionContext.Provider>;
-}
+  return (
+    <SesionContext.Provider value={value}>{children}</SesionContext.Provider>
+  );
+};
 
-export { SesionContext, ProveedorSesion };
+export default ProveedorSesion;

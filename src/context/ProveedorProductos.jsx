@@ -1,173 +1,98 @@
 import { createContext, useEffect, useState } from "react";
-import { supabase } from "../supabase/supabaseClient.js";
-import { useNotificacion } from "../hooks/useNotificacion.js";
+import useNotificacion from "../hooks/useNotificacion.js";
+import useSupabaseProductos from "../hooks/useSupabaseProductos.js";
 
-const ProductosContext = createContext(null);
+export const ProductosContext = createContext(null);
 
 /*
   Contexto del catálogo (tabla products).
   Aquí se carga, se filtra/ordena y también se hace el CRUD (crear/editar/borrar).
 */
-function ProveedorProductos({ children }) {
+const ProveedorProductos = ({ children }) => {
   const { notificar } = useNotificacion();
+  const supaProductos = useSupabaseProductos();
   const [catalogo, setCatalogo] = useState([]);
   const [mostrados, setMostrados] = useState([]);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState("");
 
-  const [filtroTipo, setFiltroTipo] = useState("");
+  // filtroTipo: "ninguno" | "nombre" | "precio" | "peso"
+  const [filtroTipo, setFiltroTipo] = useState("ninguno");
   const [filtroValor, setFiltroValor] = useState("");
+
+  // ordenarPor: "name" | "price" | "weight"
   const [ordenarPor, setOrdenarPor] = useState("name");
 
+  // Producto seleccionado para editar
   const [productoEditando, setProductoEditando] = useState(null);
 
-  const cargarProductos = async () => {
+  const cargarCatalogo = async () => {
     try {
       setCargando(true);
       setError("");
 
-      const respuesta = await supabase
-        .from("products")
-        .select("*")
-        .order("name", { ascending: true });
-
-      if (respuesta.error) throw respuesta.error;
-
-      setCatalogo(respuesta.data);
-      actualizarMostrados(respuesta.data, ordenarPor);
+      const data = await supaProductos.obtenerProductos();
+      setCatalogo(data ? data : []);
     } catch (e) {
-      let msg = "Error al cargar productos";
-      if (e) {
-        if (e.message) msg = e.message;
-      }
+      const msg = e && e.message ? e.message : "Error al cargar el catálogo";
       setError(msg);
+
       notificar(msg, "error");
-    } finally {
+} finally {
       setCargando(false);
     }
   };
 
-  useEffect(() => {
-    cargarProductos();
-  }, []);
-
-  const cambiarFiltro = (tipo, valor) => {
+  // ---- Filtros (solo uno cada vez) ----
+  const cambiarFiltro = (tipo) => {
     setFiltroTipo(tipo);
-    setFiltroValor(valor);
-  };
-
-  const limpiarFiltro = () => {
-    setFiltroTipo("");
     setFiltroValor("");
-    actualizarMostrados(catalogo, ordenarPor);
   };
 
   const filtrarPorNombre = (texto) => {
-    const t = texto.trim().toLowerCase();
-    if (!t) {
-      actualizarMostrados(catalogo, ordenarPor);
-      return;
-    }
-    const filtrados = catalogo.filter((p) => p.name.toLowerCase().includes(t));
-    actualizarMostrados(filtrados, ordenarPor);
+    setFiltroTipo("nombre");
+    setFiltroValor(texto);
   };
 
   const filtrarPorPrecioMax = (max) => {
-    const n = Number(max);
-    if (!n) {
-      actualizarMostrados(catalogo, ordenarPor);
-      return;
-    }
-    const filtrados = catalogo.filter((p) => Number(p.price) <= n);
-    actualizarMostrados(filtrados, ordenarPor);
+    setFiltroTipo("precio");
+    setFiltroValor(max);
   };
 
   const filtrarPorPesoMax = (max) => {
-    const n = Number(max);
-    if (!n) {
-      actualizarMostrados(catalogo, ordenarPor);
-      return;
-    }
-    const filtrados = catalogo.filter((p) => Number(p.weight) <= n);
-    actualizarMostrados(filtrados, ordenarPor);
+    setFiltroTipo("peso");
+    setFiltroValor(max);
   };
 
-  function ordenarLista(lista, tipoOrden) {
-    const copia = [...lista];
-
-    if (tipoOrden === "name") {
-      copia.sort((a, b) => String(a.name).localeCompare(String(b.name)));
-    }
-    if (tipoOrden === "price") {
-      copia.sort((a, b) => Number(a.price) - Number(b.price));
-    }
-    if (tipoOrden === "weight") {
-      copia.sort((a, b) => Number(a.weight) - Number(b.weight));
-    }
-
-    return copia;
-  }
-
-  function actualizarMostrados(listaBase, tipoOrden) {
-    const tipo = tipoOrden ? tipoOrden : ordenarPor;
-    const listaOrdenada = ordenarLista(listaBase, tipo);
-    setMostrados(listaOrdenada);
-  }
-
-  function cambiarOrden(tipoOrden) {
-    setOrdenarPor(tipoOrden);
-    actualizarMostrados(mostrados, tipoOrden);
-  }
-
-const seleccionarProducto = (producto) => {
-    setProductoEditando(producto);
+  const limpiarFiltro = () => {
+    setFiltroTipo("ninguno");
+    setFiltroValor("");
   };
 
-  const limpiarEdicion = () => {
-    setProductoEditando(null);
-  };
-
+  // ---- CRUD de productos ----
   const crearProducto = async (nuevo) => {
     try {
       setCargando(true);
       setError("");
 
-      const respuesta = await supabase.from("products").insert([nuevo]).select();
-      if (respuesta.error) throw respuesta.error;
+      const payload = {
+        name: nuevo.name,
+        price: nuevo.price,
+        weight: nuevo.weight,
+        image_url: nuevo.image_url,
+        description: nuevo.description,
+      };
 
-      notificar("Producto creado.", "success");
-      cargarProductos();
+      await supaProductos.crearProducto(payload);
+
+      await cargarCatalogo();
+      notificar("Producto creado", "success");
     } catch (e) {
-      let msg = "Error al crear producto";
-      if (e) {
-        if (e.message) msg = e.message;
-      }
+      const msg = e && e.message ? e.message : "Error al crear el producto";
       setError(msg);
+
       notificar(msg, "error");
-    } finally {
-      setCargando(false);
-    }
-  };
-
-  const actualizarProducto = async (id, cambios) => {
-    try {
-      setCargando(true);
-      setError("");
-
-      const respuesta = await supabase.from("products").update(cambios).eq("id", id);
-      if (respuesta.error) throw respuesta.error;
-
-      notificar("Producto actualizado.", "success");
-      cargarProductos();
-      limpiarEdicion();
-    } catch (e) {
-      let msg = "Error al actualizar producto";
-      if (e) {
-        if (e.message) msg = e.message;
-      }
-      setError(msg);
-      notificar(msg, "error");
-    } finally {
+} finally {
       setCargando(false);
     }
   };
@@ -177,29 +102,137 @@ const seleccionarProducto = (producto) => {
       setCargando(true);
       setError("");
 
-      const respuesta = await supabase.from("products").delete().eq("id", id);
-      if (respuesta.error) throw respuesta.error;
+      await supaProductos.borrarProducto(id);
 
-      notificar("Producto borrado.", "warning");
-      cargarProductos();
-    } catch (e) {
-      let msg = "Error al borrar producto";
-      if (e) {
-        if (e.message) msg = e.message;
+      // Si estaba seleccionado, se limpia
+      if (productoEditando && productoEditando.id === id) {
+        setProductoEditando(null);
       }
+
+      await cargarCatalogo();
+      notificar("Producto eliminado", "success");
+    } catch (e) {
+      const msg = e && e.message ? e.message : "Error al borrar el producto";
       setError(msg);
+
       notificar(msg, "error");
-    } finally {
+} finally {
       setCargando(false);
     }
   };
 
+  const seleccionarProducto = (producto) => {
+    setProductoEditando(producto ? producto : null);
+  };
+
+  const limpiarEdicion = () => {
+    setProductoEditando(null);
+  };
+
+  const actualizarProducto = async (id, cambios) => {
+    try {
+      setCargando(true);
+      setError("");
+
+      const payload = {
+        name: cambios.name,
+        price: cambios.price,
+        weight: cambios.weight,
+        image_url: cambios.image_url,
+        description: cambios.description,
+      };
+
+      await supaProductos.actualizarProducto(id, payload);
+
+      await cargarCatalogo();
+      notificar("Producto actualizado", "success");
+      setProductoEditando(null);
+    } catch (e) {
+      const msg = e && e.message ? e.message : "Error al actualizar el producto";
+      setError(msg);
+
+      notificar(msg, "error");
+} finally {
+      setCargando(false);
+    }
+  };
+
+  // Recalcular lista mostrada cuando cambien datos, filtro u ordenación
+  useEffect(() => {
+    const lista = catalogo ? catalogo : [];
+    const filtrados = [];
+
+    for (let i = 0; i < lista.length; i++) {
+      const p = lista[i];
+      let ok = true;
+
+      if (filtroTipo === "nombre") {
+        const nombre = p && p.name ? p.name.toLowerCase() : "";
+        const buscado = String(filtroValor || "").toLowerCase();
+        ok = nombre.indexOf(buscado) !== -1;
+      }
+
+      if (filtroTipo === "precio") {
+        if (filtroValor === "" || filtroValor === null) {
+          ok = true;
+        } else {
+          const max = Number(filtroValor);
+          if (p && p.price != null) ok = p.price <= max;
+          else ok = false;
+        }
+      }
+
+      if (filtroTipo === "peso") {
+        if (filtroValor === "" || filtroValor === null) {
+          ok = true;
+        } else {
+          const max = Number(filtroValor);
+          if (p && p.weight != null) ok = p.weight <= max;
+          else ok = false;
+        }
+      }
+
+      if (ok) filtrados.push(p);
+    }
+
+    const ordenados = filtrados.slice();
+
+    ordenados.sort(function (a, b) {
+      const aName = a && a.name ? a.name : "";
+      const bName = b && b.name ? b.name : "";
+
+      // Para dejar valores vacíos al final
+      const aPrice = a && a.price != null ? a.price : 999999999;
+      const bPrice = b && b.price != null ? b.price : 999999999;
+
+      const aWeight = a && a.weight != null ? a.weight : 999999999;
+      const bWeight = b && b.weight != null ? b.weight : 999999999;
+
+      if (ordenarPor === "name") return aName.localeCompare(bName);
+      if (ordenarPor === "price") return aPrice - bPrice;
+      return aWeight - bWeight;
+    });
+
+    setMostrados(ordenados);
+  }, [catalogo, filtroTipo, filtroValor, ordenarPor]);
+
+  // Cargar al entrar
+  useEffect(() => {
+    cargarCatalogo();
+  }, []);
+
+  // Resumen
   const totalMostrados = mostrados.length;
+
+  let sumaPrecios = 0;
+  for (let i = 0; i < mostrados.length; i++) {
+    const p = mostrados[i];
+    if (p && p.price != null) sumaPrecios += p.price;
+  }
 
   let precioMedio = 0;
   if (mostrados.length > 0) {
-    const suma = mostrados.reduce((acc, p) => acc + Number(p.price), 0);
-    precioMedio = suma / mostrados.length;
+    precioMedio = sumaPrecios / mostrados.length;
   }
 
   const value = {
@@ -209,6 +242,7 @@ const seleccionarProducto = (producto) => {
     error,
     setError,
 
+    // filtro/orden
     filtroTipo,
     filtroValor,
     ordenarPor,
@@ -217,21 +251,28 @@ const seleccionarProducto = (producto) => {
     filtrarPorPrecioMax,
     filtrarPorPesoMax,
     limpiarFiltro,
-    cambiarOrden,
+    setOrdenarPor,
 
+    // resumen
     totalMostrados,
     precioMedio,
 
+    // edición
     productoEditando,
     seleccionarProducto,
     limpiarEdicion,
 
+    // crud
     crearProducto,
     borrarProducto,
     actualizarProducto,
   };
 
-  return <ProductosContext.Provider value={value}>{children}</ProductosContext.Provider>;
-}
+  return (
+    <ProductosContext.Provider value={value}>
+      {children}
+    </ProductosContext.Provider>
+  );
+};
 
-export { ProductosContext, ProveedorProductos };
+export default ProveedorProductos;

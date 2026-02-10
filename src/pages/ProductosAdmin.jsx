@@ -1,4 +1,4 @@
-import { useSesion } from "../hooks/useSesion.js";
+import useSesion from "../hooks/useSesion.js";
 import { Navigate } from "react-router-dom";
 
 import ProductoCrear from "../components/productos/ProductoCrear.jsx";

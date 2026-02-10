@@ -1,7 +1,7 @@
-import { useProductos } from "../../hooks/useProductos.js";
-import { useSesion } from "../../hooks/useSesion.js";
-import { useCompra } from "../../hooks/useCompra.js";
-import { useNotificacion } from "../../hooks/useNotificacion.js";
+import useProductos from "../../hooks/useProductos.js";
+import useSesion from "../../hooks/useSesion.js";
+import useCompra from "../../hooks/useCompra.js";
+import useNotificacion from "../../hooks/useNotificacion.js";
 import FiltroProductos from "./FiltroProductos.jsx";
 import { convertirEuros } from "../functions/functions.js";
 import { convertirPeso } from "../functions/functions.js";

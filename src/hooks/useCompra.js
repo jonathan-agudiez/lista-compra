@@ -1,12 +1,18 @@
 import { useContext } from "react";
 import { CompraContext } from "../context/ProveedorCompra.jsx";
 
-function useCompra() {
-  const ctx = useContext(CompraContext);
-  if (!ctx) {
-    throw new Error("useCompra debe usarse dentro de <ProveedorCompra>.");
-  }
-  return ctx;
-}
+/*
+  Hook personalizado para acceder al contexto de compra.
+*/
+const useCompra = () => {
+  const contexto = useContext(CompraContext);
 
-export { useCompra };
+  // Si no está dentro del Provider, se muestra un error
+  if (contexto === null) {
+    throw new Error("Este hook debe usarse dentro de ProveedorCompra");
+  }
+
+  return contexto;
+};
+
+export default useCompra;

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useProductos } from "../../hooks/useProductos.js";
+import useProductos from "../../hooks/useProductos.js";
 import "./ProductoEditor.css";
 
 /*

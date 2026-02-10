@@ -1,4 +1,4 @@
-import { useProductos } from "../../hooks/useProductos.js";
+import useProductos from "../../hooks/useProductos.js";
 import { convertirEuros } from "../functions/functions.js";
 import { convertirPeso } from "../functions/functions.js";
 import "./ProductoListaAdmin.css";

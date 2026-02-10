@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useSesion } from "../hooks/useSesion.js";
+import useSesion from "../hooks/useSesion.js";
 import "./Inicio.css";
 
 const Inicio = () => {

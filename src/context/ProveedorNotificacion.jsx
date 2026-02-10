@@ -1,6 +1,6 @@
 import { createContext, useState } from "react";
 
-const contextoNotificacion = createContext(null);
+export const NotificacionContext = createContext(null);
 
 /*
   Contexto para avisos rápidos (success / error / warning).
@@ -9,11 +9,7 @@ function ProveedorNotificacion({ children }) {
   const [mensaje, setMensaje] = useState({ texto: "", tipo: "" });
 
   const notificar = (texto, tipo) => {
-    let tipoFinal = "success";
-    if (tipo) {
-      tipoFinal = tipo;
-    }
-
+    const tipoFinal = tipo ? tipo : "success";
     setMensaje({ texto: texto, tipo: tipoFinal });
 
     setTimeout(() => {
@@ -21,13 +17,13 @@ function ProveedorNotificacion({ children }) {
     }, 3500);
   };
 
-  const datosProveer = { mensaje: mensaje, notificar: notificar };
+  const value = { mensaje: mensaje, notificar: notificar };
 
   return (
-    <contextoNotificacion.Provider value={datosProveer}>
+    <NotificacionContext.Provider value={value}>
       {children}
-    </contextoNotificacion.Provider>
+    </NotificacionContext.Provider>
   );
 }
 
-export { contextoNotificacion, ProveedorNotificacion };
+export default ProveedorNotificacion;

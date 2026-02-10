@@ -1,4 +1,4 @@
-import { useNotificacion } from "../../hooks/useNotificacion.js";
+import useNotificacion from "../../hooks/useNotificacion.js";
 import "./Notificacion.css";
 
 /*

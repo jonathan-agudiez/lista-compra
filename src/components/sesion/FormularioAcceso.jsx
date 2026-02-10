@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSesion } from "../../hooks/useSesion.js";
+import useSesion from "../../hooks/useSesion.js";
 import "./formularioAcceso.css";
 
 /*
@@ -24,6 +24,7 @@ const FormularioAcceso = () => {
     }
   };
 
+  // Para no usar ternario en el atributo
   let autocompletePassword = "current-password";
   if (modo === "registro") {
     autocompletePassword = "new-password";
