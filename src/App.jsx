@@ -8,6 +8,7 @@ import Footer from "./components/footer/Footer.jsx";
 import CabeceraFila from "./components/layout/CabeceraFila.jsx";
 
 import ProveedorSesion from "./context/ProveedorSesion.jsx";
+import ProveedorRoles from "./context/ProveedorRoles.jsx";
 import ProveedorNotificacion from "./context/ProveedorNotificacion.jsx";
 import Notificacion from "./components/ui/Notificacion.jsx";
 
@@ -18,6 +19,7 @@ function App() {
     <BrowserRouter>
       <ProveedorNotificacion>
         <ProveedorSesion>
+        <ProveedorRoles>
           <ContenedorGeneral>
             <Notificacion />
 
@@ -31,6 +33,7 @@ function App() {
 
             <Footer />
           </ContenedorGeneral>
+        </ProveedorRoles>
         </ProveedorSesion>
       </ProveedorNotificacion>
     </BrowserRouter>
