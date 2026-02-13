@@ -72,7 +72,7 @@ const ProveedorRoles = ({ children }) => {
         return false;
       }
 
-      const lista = await supaRoles.obtenerRoles();
+      const lista = await supaRoles.obtenerTodosLosRoles();
       setRoles(lista);
       return true;
     } catch (e) {

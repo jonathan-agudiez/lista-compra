@@ -1,11 +1,8 @@
+
 import { supabase } from "../supabase/supabaseClient.js";
 
-/*
-  Comunicación con Supabase para la gestión de roles.
-  La idea es que si algún día migramos a otro BaaS/MySQL,
-  se cambie este archivo (o su equivalente) y no el resto del proyecto.
-*/
 const useSupabaseRoles = () => {
+
   const obtenerMiRol = async (userId) => {
     const resp = await supabase
       .from("roles")
@@ -13,33 +10,61 @@ const useSupabaseRoles = () => {
       .eq("user_id", userId)
       .maybeSingle();
 
-    if (resp.error) {
-      // PGRST116 suele indicar que no hay fila (o hay más de una) para .single/.maybeSingle
-      // En esta práctica, si no existe fila todavía, asumimos rol 'usuario' para no romper el login.
-      if (resp.error.code === "PGRST116") {
-        return "usuario";
-      }
-      throw resp.error;
-    }
+    if (resp.error) throw resp.error;
 
-    if (resp.data && resp.data.role) {
-      return resp.data.role;
-    }
-    return "usuario";
+    return resp.data && resp.data.role ? resp.data.role : "usuario";
   };
 
-  const obtenerRoles = async () => {
-    const resp = await supabase
+  /*
+    IMPORTANTE:
+    No se puede hacer join directo a auth.users desde PostgREST de forma sencilla.
+    Para mostrar display_name/email, usamos una tabla PUBLIC "user_info"
+    (user_id, email, display_name) mantenida por trigger o rellenada por SQL.
+  */
+  const obtenerTodosLosRoles = async () => {
+    const respRoles = await supabase
       .from("roles")
       .select("user_id, role, created_at")
       .order("created_at", { ascending: true });
 
-    if (resp.error) throw resp.error;
+    if (respRoles.error) throw respRoles.error;
 
-    if (resp.data) {
-      return resp.data;
+    const listaRoles = respRoles.data ? respRoles.data : [];
+
+    // Intentamos obtener información de usuario (si existe la tabla user_info)
+    const respInfo = await supabase
+      .from("user_info")
+      .select("user_id, email, display_name");
+
+    // Si falla porque la tabla aún no existe o por permisos, devolvemos roles sin info
+    if (respInfo.error) {
+      return listaRoles.map((r) => ({
+        ...r,
+        email: "",
+        display_name: "",
+      }));
     }
-    return [];
+
+    const listaInfo = respInfo.data ? respInfo.data : [];
+
+    // Mezcla simple (2DAW) por user_id
+    const resultado = listaRoles.map((r) => {
+      let info = null;
+      for (let i = 0; i < listaInfo.length; i++) {
+        if (listaInfo[i].user_id === r.user_id) {
+          info = listaInfo[i];
+          break;
+        }
+      }
+
+      return {
+        ...r,
+        email: info && info.email ? info.email : "",
+        display_name: info && info.display_name ? info.display_name : "",
+      };
+    });
+
+    return resultado;
   };
 
   const actualizarRol = async (userId, nuevoRol) => {
@@ -55,7 +80,7 @@ const useSupabaseRoles = () => {
 
   return {
     obtenerMiRol,
-    obtenerRoles,
+    obtenerTodosLosRoles,
     actualizarRol,
   };
 };

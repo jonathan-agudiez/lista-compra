@@ -1,87 +1,112 @@
-.rolesAdmin{
-  display: grid;
-  gap: 14px;
+.roles-admin {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
-.rolesAdmin h2{
-  margin: 0;
-  letter-spacing: -0.25px;
-}
-
-.rolesAdmin p{
-  margin: 0;
-  color: var(--muted);
-  font-size: 14px;
-}
-
-/* Contenedor tabla con el mismo look & feel que el resto (panel/card) */
-.rolesAdminTabla{
-  overflow-x: auto;
+/* Contenedor tipo tarjeta */
+.roles-admin {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
 }
 
-.rolesAdminTabla table{
+/* Título */
+.roles-admin h2 {
+  margin-bottom: 16px;
+  font-size: 1.4rem;
+}
+
+/* Tabla */
+.tabla-roles {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  min-width: 520px; /* evita que las columnas se aplasten demasiado */
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 0.95rem;
 }
 
-.rolesAdminTabla thead th{
+.tabla-roles thead {
+  background: var(--surface-2);
+}
+
+.tabla-roles th {
   text-align: left;
-  font-size: 12px;
-  color: var(--muted);
-  font-weight: 900;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  background: rgba(241,245,249,.75);
-  padding: 12px 14px;
+  padding: 10px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.tabla-roles td {
+  padding: 10px;
   border-bottom: 1px solid var(--border);
 }
 
-.rolesAdminTabla tbody td{
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--border);
+/* Hover filas */
+.tabla-roles tbody tr:hover {
+  background: var(--surface-2);
+  transition: background 0.15s ease;
 }
 
-.rolesAdminTabla tbody tr:last-child td{
-  border-bottom: 0;
+/* Columna rol alineada derecha */
+.col-rol {
+  text-align: right;
+  width: 140px;
 }
 
-.rolesAdminTabla tbody tr:hover td{
-  background: rgba(15,23,42,.03);
+th.col-rol {
+  text-align: right;
 }
 
-.rolesAdminId{
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  font-size: 12.5px;
-  color: var(--text);
-  max-width: 560px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+/* UUID monospace */
+.tabla-roles td:nth-child(2) {
+  font-family: monospace;
+  font-size: 0.85rem;
+  opacity: 0.85;
 }
 
-.rolesAdminTabla select{
-  background: var(--surface);
-  color: var(--text);
+/* Select estilizado */
+.col-rol select {
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 9px 12px;
-  font-weight: 700;
+  background: var(--surface);
+  font-size: 0.9rem;
+  cursor: pointer;
+  min-width: 110px;
+  transition: all 0.15s ease;
+}
+
+.col-rol select:hover {
+  border-color: var(--primary);
+}
+
+.col-rol select:focus {
   outline: none;
-  transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-soft);
 }
 
-.rolesAdminTabla select:focus{
-  border-color: rgba(56,97,251,.45);
-  box-shadow: 0 0 0 4px rgba(56,97,251,.12);
+/* Mensaje inferior */
+.roles-admin p {
+  margin-top: 14px;
+  font-size: 0.85rem;
+  opacity: 0.7;
 }
 
-@media (max-width: 720px){
-  .rolesAdminTabla{ border-radius: 14px; }
-  .rolesAdminTabla table{ min-width: 640px; }
+/* Responsive */
+@media (max-width: 768px) {
+  .tabla-roles th,
+  .tabla-roles td {
+    padding: 8px;
+  }
+
+  .col-rol {
+    width: 100px;
+  }
+
+  .col-rol select {
+    min-width: 90px;
+  }
 }

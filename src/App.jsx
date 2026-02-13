@@ -19,21 +19,21 @@ function App() {
     <BrowserRouter>
       <ProveedorNotificacion>
         <ProveedorSesion>
-        <ProveedorRoles>
-          <ContenedorGeneral>
-            <Notificacion />
+          <ProveedorRoles>
+            <ContenedorGeneral>
+              <Notificacion />
 
-            <Cabecera>
-              <CabeceraFila />
-            </Cabecera>
+              <Cabecera>
+                <CabeceraFila />
+              </Cabecera>
 
-            <ContenidoPrincipal>
-              <Rutas />
-            </ContenidoPrincipal>
+              <ContenidoPrincipal>
+                <Rutas />
+              </ContenidoPrincipal>
 
-            <Footer />
-          </ContenedorGeneral>
-        </ProveedorRoles>
+              <Footer />
+            </ContenedorGeneral>
+          </ProveedorRoles>
         </ProveedorSesion>
       </ProveedorNotificacion>
     </BrowserRouter>

@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import { Navigate } from "react-router-dom";
 
@@ -6,11 +7,6 @@ import useRoles from "../hooks/useRoles.js";
 
 import "./RolesAdmin.css";
 
-/*
-  Pantalla de administración de roles.
-  - Solo accesible por admin (experiencia de usuario).
-  - Además, RLS protege el acceso real en Supabase.
-*/
 const RolesAdmin = () => {
   const { user, cargando } = useSesion();
   const { cargandoRol, esAdmin, roles, cargarRoles, cambiarRol } = useRoles();
@@ -21,53 +17,55 @@ const RolesAdmin = () => {
     }
   }, [user, esAdmin]);
 
-  if (cargando || cargandoRol) {
-    return null;
-  }
+  if (cargando || cargandoRol) return null;
 
-  if (!user) {
-    return <Navigate to="/acceso" replace />;
-  }
+  if (!user) return <Navigate to="/acceso" replace />;
+  if (!esAdmin) return <Navigate to="/compra" replace />;
 
-  if (!esAdmin) {
-    return <Navigate to="/compra" replace />;
-  }
-
-  const onCambiarRol = async (userId, nuevoRol) => {
+  const onCambiar = async (userId, nuevoRol) => {
     await cambiarRol(userId, nuevoRol);
   };
 
-  return (
-    <div className="rolesAdmin">
-      <h2>Administración de roles</h2>
-      <p>Solo usuarios con rol admin pueden cambiar roles.</p>
+  const nombreVisible = (r) => {
+    if (r.display_name && r.display_name.trim() !== "") return r.display_name;
+    if (r.email && r.email.trim() !== "") return r.email;
+    return "Sin nombre";
+  };
 
-      <div className="rolesAdminTabla">
-        <table>
-          <thead>
-            <tr>
-              <th>User ID</th>
-              <th>Rol</th>
+  return (
+    <div className="pagina roles-admin">
+      <h2>Administración de roles</h2>
+
+      <table className="tabla-roles">
+        <thead>
+          <tr>
+            <th>Usuario</th>
+            <th>UUID</th>
+            <th className="col-rol">Rol</th>
+          </tr>
+        </thead>
+        <tbody>
+          {roles.map((r) => (
+            <tr key={r.user_id}>
+              <td>{nombreVisible(r)}</td>
+
+              <td style={{ fontFamily: "monospace" }}>
+                {r.user_id}
+              </td>
+
+              <td className="col-rol">
+                <select
+                  value={r.role}
+                  onChange={(e) => onCambiar(r.user_id, e.target.value)}
+                >
+                  <option value="usuario">usuario</option>
+                  <option value="admin">admin</option>
+                </select>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {roles.map((r) => (
-              <tr key={r.user_id}>
-                <td className="rolesAdminId">{r.user_id}</td>
-                <td>
-                  <select
-                    value={r.role}
-                    onChange={(e) => onCambiarRol(r.user_id, e.target.value)}
-                  >
-                    <option value="usuario">usuario</option>
-                    <option value="admin">admin</option>
-                  </select>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
