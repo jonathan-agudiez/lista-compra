@@ -1,0 +1,13 @@
+.perfil-mini img {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border);
+  transition: all 0.2s ease;
+}
+
+.perfil-mini img:hover {
+  transform: scale(1.05);
+  border-color: var(--primary);
+}

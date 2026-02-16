@@ -8,6 +8,7 @@ import Acceso from "../pages/Acceso.jsx";
 import Compra from "../pages/Compra.jsx";
 import ProductosAdmin from "../pages/ProductosAdmin.jsx";
 import RolesAdmin from "../pages/RolesAdmin.jsx";
+import Perfil from "../pages/Perfil.jsx";
 import Error from "../pages/Error.jsx";
 
 import ProveedorCompra from "../context/ProveedorCompra.jsx";
@@ -63,6 +64,7 @@ const Rutas = () => {
       <Route path="/compra" element={vistaCompra} />
       <Route path="/productos" element={vistaProductos} />
       <Route path="/roles" element={vistaRoles} />
+      <Route path="/perfil" element={<Perfil />} />
 
       <Route path="*" element={<Error />} />
     </Routes>

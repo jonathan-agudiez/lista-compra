@@ -32,6 +32,38 @@
   color: var(--text);
 }
 
+.perfil-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.perfil-sesion {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.perfil-mini img {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border);
+  transition: all 0.2s ease;
+}
+
+.perfil-sesion:hover .perfil-mini img {
+  transform: scale(1.05);
+  border-color: var(--primary);
+}
+
+.perfil-sesion span {
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+
 @media (max-width: 720px){
   .zonaSesion{ width: 100%; justify-content: space-between; }
   .usuarioNombre{ max-width: 56vw; }

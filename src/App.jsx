@@ -13,6 +13,7 @@ import ProveedorNotificacion from "./context/ProveedorNotificacion.jsx";
 import Notificacion from "./components/ui/Notificacion.jsx";
 
 import Rutas from "./routes/Rutas.jsx";
+import ProveedorPerfil from "./context/ProveedorPerfil.jsx";
 
 function App() {
   return (
@@ -20,19 +21,21 @@ function App() {
       <ProveedorNotificacion>
         <ProveedorSesion>
           <ProveedorRoles>
-            <ContenedorGeneral>
-              <Notificacion />
+            <ProveedorPerfil>
+              <ContenedorGeneral>
+                <Notificacion />
 
-              <Cabecera>
-                <CabeceraFila />
-              </Cabecera>
+                <Cabecera>
+                  <CabeceraFila />
+                </Cabecera>
 
-              <ContenidoPrincipal>
-                <Rutas />
-              </ContenidoPrincipal>
+                <ContenidoPrincipal>
+                  <Rutas />
+                </ContenidoPrincipal>
 
-              <Footer />
-            </ContenedorGeneral>
+                <Footer />
+              </ContenedorGeneral>
+            </ProveedorPerfil>
           </ProveedorRoles>
         </ProveedorSesion>
       </ProveedorNotificacion>
