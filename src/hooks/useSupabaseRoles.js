@@ -1,88 +1,79 @@
-
 import { supabase } from "../supabase/supabaseClient.js";
 
 const useSupabaseRoles = () => {
-
   const obtenerMiRol = async (userId) => {
     const resp = await supabase
       .from("roles")
-      .select("role")
-      .eq("user_id", userId)
+      .select("rol")
+      .eq("id_rol", userId)
       .maybeSingle();
 
     if (resp.error) throw resp.error;
 
-    return resp.data && resp.data.role ? resp.data.role : "usuario";
+    return resp.data && resp.data.rol ? resp.data.rol : "usuario";
   };
 
-  /*
-    IMPORTANTE:
-    No se puede hacer join directo a auth.users desde PostgREST de forma sencilla.
-    Para mostrar display_name/email, usamos una tabla PUBLIC "user_info"
-    (user_id, email, display_name) mantenida por trigger o rellenada por SQL.
-  */
   const obtenerTodosLosRoles = async () => {
-    const respRoles = await supabase
-      .from("roles")
-      .select("user_id, role, created_at")
-      .order("created_at", { ascending: true });
+  const respRoles = await supabase
+    .from("roles")
+    .select("id_rol, rol, correo, created_at")
+    .order("created_at", { ascending: true });
 
-    if (respRoles.error) throw respRoles.error;
+  if (respRoles.error) throw respRoles.error;
 
-    const listaRoles = respRoles.data ? respRoles.data : [];
+  const roles = respRoles.data ? respRoles.data : [];
 
-    // Intentamos obtener información de usuario (si existe la tabla user_info)
-    const respInfo = await supabase
-      .from("user_info")
-      .select("user_id, email, display_name");
+  const respProfiles = await supabase
+    .from("profiles")
+    .select("user_id, full_name");
 
-    // Si falla porque la tabla aún no existe o por permisos, devolvemos roles sin info
-    if (respInfo.error) {
-      return listaRoles.map((r) => ({
-        ...r,
-        email: "",
-        display_name: "",
-      }));
+  // si falla por lo que sea, devolvemos roles sin nombre
+  if (respProfiles.error) {
+    return roles.map((r) => ({
+      user_id: r.id_rol,
+      role: r.rol,
+      email: r.correo || "",
+      created_at: r.created_at,
+      full_name: "",
+    }));
+  }
+
+  const profiles = respProfiles.data ? respProfiles.data : [];
+
+  const resultado = roles.map((r) => {
+    let nombre = "";
+
+    for (let i = 0; i < profiles.length; i++) {
+      if (profiles[i].user_id === r.id_rol) {
+        nombre = profiles[i].full_name ? profiles[i].full_name : "";
+        break;
+      }
     }
 
-    const listaInfo = respInfo.data ? respInfo.data : [];
+    return {
+      user_id: r.id_rol,
+      role: r.rol,
+      email: r.correo || "",
+      created_at: r.created_at,
+      full_name: nombre,
+    };
+  });
 
-    // Mezcla simple (2DAW) por user_id
-    const resultado = listaRoles.map((r) => {
-      let info = null;
-      for (let i = 0; i < listaInfo.length; i++) {
-        if (listaInfo[i].user_id === r.user_id) {
-          info = listaInfo[i];
-          break;
-        }
-      }
-
-      return {
-        ...r,
-        email: info && info.email ? info.email : "",
-        display_name: info && info.display_name ? info.display_name : "",
-      };
-    });
-
-    return resultado;
-  };
+  return resultado;
+};
 
   const actualizarRol = async (userId, nuevoRol) => {
     const resp = await supabase
       .from("roles")
-      .update({ role: nuevoRol })
-      .eq("user_id", userId);
+      .update({ rol: nuevoRol })
+      .eq("id_rol", userId);
 
     if (resp.error) throw resp.error;
 
     return true;
   };
 
-  return {
-    obtenerMiRol,
-    obtenerTodosLosRoles,
-    actualizarRol,
-  };
+  return { obtenerMiRol, obtenerTodosLosRoles, actualizarRol };
 };
 
 export default useSupabaseRoles;

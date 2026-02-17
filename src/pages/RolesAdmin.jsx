@@ -26,11 +26,11 @@ const RolesAdmin = () => {
     await cambiarRol(userId, nuevoRol);
   };
 
-  const nombreVisible = (r) => {
-    if (r.display_name && r.display_name.trim() !== "") return r.display_name;
-    if (r.email && r.email.trim() !== "") return r.email;
-    return "Sin nombre";
-  };
+const nombreVisible = (r) => {
+  if (r.full_name && r.full_name.trim() !== "") return r.full_name;
+  if (r.email && r.email.trim() !== "") return r.email;
+  return "Sin nombre";
+};
 
   return (
     <div className="pagina roles-admin">
