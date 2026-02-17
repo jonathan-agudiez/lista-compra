@@ -1,13 +1,212 @@
-.perfil-mini img {
-  width: 38px;
-  height: 38px;
+.perfil {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 22px;
+}
+
+/* Tarjeta principal */
+.perfil-card {
+  margin-top: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 22px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Avatar grande */
+.perfil-avatar {
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--border);
+  border: 3px solid var(--border);
+  align-self: center;
+  margin-bottom: 6px;
+  transition: all 0.25s ease;
+}
+
+.perfil-avatar:hover {
+  transform: scale(1.04);
+  border-color: var(--primary);
+}
+
+/* Labels */
+.perfil-card label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* Inputs y textarea */
+.perfil-card input,
+.perfil-card textarea {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 9px 11px;
+  font-size: 0.92rem;
+  background: var(--surface);
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.perfil-card input:focus,
+.perfil-card textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-soft);
+}
+
+/* Textarea */
+.perfil-card textarea {
+  resize: vertical;
+  min-height: 72px;
+  line-height: 1.35;
+}
+
+/* Botón guardar */
+.perfil-card button {
+  margin-top: 6px;
+  align-self: flex-end;
+
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 9px 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.perfil-mini img:hover {
-  transform: scale(1.05);
+.perfil-card button:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+.perfil-card button:active {
+  transform: translateY(0);
+}
+
+/* Título */
+.perfil h2 {
+  margin-bottom: 10px;
+  font-size: 1.35rem;
+}
+
+/* ========================= */
+/* SELECTOR DE AVATAR */
+/* ========================= */
+
+.perfil-avatarSelector {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.perfil-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.perfil-help {
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+/* Grid */
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-top: 8px;
+}
+
+/* ✅ Botón avatar BLINDADO contra estilos globales */
+.avatar-item {
+  background: transparent !important;
+  border: none !important;
+  padding: 0;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+/* Evita hover/focus azul heredado */
+.avatar-item:hover,
+.avatar-item:focus,
+.avatar-item:active {
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none;
+}
+
+/* Imagen circular */
+.avatar-item img {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  object-fit: cover;
+
+  border: 2px solid transparent;
+  transition: all 0.18s ease;
+}
+
+/* Hover elegante */
+.avatar-item:hover img {
+  transform: scale(1.06);
   border-color: var(--primary);
+}
+
+/* Avatar seleccionado */
+.avatar-item.active img {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+/* ========================= */
+/* RESPONSIVE */
+/* ========================= */
+
+@media (max-width: 640px) {
+  .perfil {
+    padding: 14px;
+  }
+
+  .perfil-card {
+    padding: 16px;
+  }
+
+  .perfil-avatar {
+    width: 82px;
+    height: 82px;
+  }
+
+  .perfil-card button {
+    width: 100%;
+    align-self: stretch;
+  }
+
+  .avatar-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .avatar-item img {
+    width: 60px;
+    height: 60px;
+  }
 }

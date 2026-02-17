@@ -4,6 +4,17 @@ import useSesion from "../hooks/useSesion.js";
 import usePerfil from "../hooks/usePerfil.js";
 import "./Perfil.css";
 
+const AVATARES = [
+  "https://gilkqqavnomidrspecwa.supabase.co/storage/v1/object/public/Eccomerce/avatar/01_avatar.png",
+  "https://gilkqqavnomidrspecwa.supabase.co/storage/v1/object/public/Eccomerce/avatar/02_avatar.png",
+  "https://gilkqqavnomidrspecwa.supabase.co/storage/v1/object/public/Eccomerce/avatar/03_avatar.png",
+  "https://gilkqqavnomidrspecwa.supabase.co/storage/v1/object/public/Eccomerce/avatar/04_avatar.png",
+  "https://gilkqqavnomidrspecwa.supabase.co/storage/v1/object/public/Eccomerce/avatar/05_avatar.png",
+  "https://gilkqqavnomidrspecwa.supabase.co/storage/v1/object/public/Eccomerce/avatar/06_avatar.png",
+  "https://gilkqqavnomidrspecwa.supabase.co/storage/v1/object/public/Eccomerce/avatar/07_avatar.png",
+  "https://gilkqqavnomidrspecwa.supabase.co/storage/v1/object/public/Eccomerce/avatar/08_avatar.png",
+];
+
 const Perfil = () => {
   const { user } = useSesion();
   const { perfil, cargarPerfil, guardarPerfil } = usePerfil();
@@ -33,8 +44,8 @@ const Perfil = () => {
   };
 
   if (!user) {
-    return <Navigate to="/acceso" replace />
-  };
+    return <Navigate to="/acceso" replace />;
+  }
 
   return (
     <div className="pagina perfil">
@@ -49,17 +60,42 @@ const Perfil = () => {
 
         <label>
           Nombre completo
-          <input value={fullName} onChange={(e) => setFullName(e.target.value)} />
+          <input
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+          />
         </label>
 
-        <label>
-          Avatar URL
-          <input value={avatar} onChange={(e) => setAvatar(e.target.value)} />
-        </label>
+        <div className="perfil-avatarSelector">
+          <div className="perfil-label">Avatar</div>
+          <div className="perfil-help">
+            Selecciona uno de los avatares (Fraggle Rock) disponibles.
+          </div>
+
+          <div className="avatar-grid">
+            {AVATARES.map((url) => {
+              const activo = avatar === url;
+
+              return (
+                <button
+                  key={url}
+                  type="button"
+                  className={activo ? "avatar-item active" : "avatar-item"}
+                  onClick={() => setAvatar(url)}
+                >
+                  <img src={url} alt="avatar" />
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
         <label>
           Descripción
-          <textarea value={desc} onChange={(e) => setDesc(e.target.value)} />
+          <textarea
+            value={desc}
+            onChange={(e) => setDesc(e.target.value)}
+          />
         </label>
 
         <button onClick={onGuardar}>Guardar cambios</button>
