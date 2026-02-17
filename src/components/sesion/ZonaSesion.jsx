@@ -23,7 +23,7 @@ const ZonaSesion = () => {
             <div className="sesion perfil-sesion">
               <div className="perfil-mini">
                 <img
-                  src={perfil?.avatar_url || "https://gilkqqavnomidrspecwa.supabase.co/storage/v1/object/public/Eccomerce/avatar/02-perfil.png"}
+                  src={perfil?.avatar_url || "https://gilkqqavnomidrspecwa.supabase.co/storage/v1/object/public/Eccomerce/avatar/01_avatar.png"}
                   alt="perfil"
                 />
               </div>

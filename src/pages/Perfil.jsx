@@ -53,7 +53,7 @@ const Perfil = () => {
 
       <div className="perfil-card">
         <img
-          src={avatar || "/avatar-default.png"}
+          src={avatar || "https://gilkqqavnomidrspecwa.supabase.co/storage/v1/object/public/Eccomerce/avatar/01_avatar.png"}
           alt="avatar"
           className="perfil-avatar"
         />
